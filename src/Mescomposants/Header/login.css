@@ -1,0 +1,73 @@
+.login-container {
+    display: flex;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 800px;
+    margin: auto;
+  }
+  
+  .login-left {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .login-right {
+    background-color: #375798;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    flex: 0.8;
+    border-radius: 0 8px 8px 0;
+  }
+  
+  .highlight {
+    color: #f9e71c;
+  }
+  
+  .input-field {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .btn-submit {
+    background-color: #375798;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .btn-submit:hover {
+    background-color: #2c497b;
+  }
+  
+  .signup {
+    margin-top: 15px;
+  }
+  
+  .company-info {
+    margin-bottom: 20px;
+  }
+  
+  .company-logo {
+    max-width: 100px;
+  }
+  
+  .animal-icons img {
+    margin: 0 5px;
+  }
+  

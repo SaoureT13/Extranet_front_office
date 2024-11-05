@@ -1,13 +1,191 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+[data-rmiz-modal-overlay="visible"] {
+    background-color: rgba(0, 0, 0, 0.7) !important;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.data-rmiz-modal-content img{
+    max-width: 300px !important;
+    max-height: 300px !important;
 }
+
+.bgUserConnected{
+    background-color: #bad3fb !important;
+}
+
+.bgUserDisConnected{
+    background-color: #f7f7f7 !important;
+}
+
+
+.bgUserDisConnected .header-bottom {
+    /* border-bottom: 1px solid #214293 !important; */
+    background-color: #fff !important;
+    color: #214293 !important;
+}
+
+
+.bgUserConnected .header-bottom {
+    /* border-bottom: 1px solid #214293 !important; */
+    background-color: #fff !important;
+    color: #214293 !important;
+}
+
+.header-left{
+    margin: 0 auto !important;
+}
+
+.product-wrap {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px !important;
+}
+
+.product-details{
+    background-color: #edf1fa !important;
+    padding: 5px !important;
+}
+
+
+.product-wrap {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+  
+  .product-media  {
+    transition: transform 0.3s ease; /* Transition douce pour l'effet de zoom */
+  }
+  
+  .product-wrap:hover {
+    transform: scale(1.1); /* Agrandir l'image à 110% lors du survol */
+  }
+
+
+  .sectionTitle{
+    background-color: #3656a1;
+    padding: 10px;
+    color: white;
+    display: inline-block;
+    border-radius: 5px;
+    font-size: 20px;
+  }
+  
+
+
+  .fs_header_1_4rem{
+    font-size: 1.4rem;
+
+  }
+
+
+
+  @media (min-width: 992px) {
+    .row .main-content {
+        max-width: 100% !important;
+    }
+}
+
+
+
+
+
+
+/* Header */
+
+
+
+.cart-dropdown .cart-count {
+    position: absolute;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    font-style: normal;
+    z-index: 1;
+    right: -8px;
+    top: -5px;
+    font-family: Poppins, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.8rem;
+    background: #fff700 !important;
+    color: #3656a1 !important;
+    text-align: center;
+}
+
+
+
+
+/*  */
+
+
+.product-single .quantity, .product-single .btn-cart, .product-single .btn-product-icon , .cart .form-control{
+    border-radius: 12px;
+    border-style : Solid;
+    border-color : #3656A1;
+    border-color : rgba(54, 86, 161, 1);
+    border-width : 2px;
+    opacity : 0.6;
+}
+
+.input-group .form-control {
+    font-size: 2.3rem !important;
+    padding: 0 1.4rem 0 1.8rem;
+    color: var(--snproveci-blue-2);
+    opacity : 1;
+}
+
+
+.quantity-minus,  .w-icon-plus {
+    border-style : Solid !important;
+    border-color : #3656A1 !important;
+    border-color : rgba(54, 86, 161, 1) !important;
+    border-width : 3px !important;
+    margin-left: 15px !important;
+}
+
+.input-group button {
+    position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    right: 1.5rem;
+    padding: 0;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 50%;
+    background-color: #fff;
+    color: var(--snproveci-blue-2);
+    font-size: 1.4rem;
+    border: none;
+    
+}
+
+.p-5{
+        padding: 20px !important;
+}
+
+.mx-2{
+    margin: 10px !important;
+}
+
+.bg-blue-light{
+    background-color: #dfe9fb !important;
+}
+
+/* Stylisation du container card-header */
+.card-header {
+    padding: 1rem 2.7rem;
+  }
+  
+  /* Stylisation des boutons radio */
+  .form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    accent-color: var(--snproveci-blue-2); /* Change la couleur */
+  }
+  
+  /* Stylisation du label des boutons radio */
+  .form-check-label {
+    font-size: 1.4rem;
+    color: var(--snproveci-blue-2);
+    font-weight: 400;
+  }
+  
