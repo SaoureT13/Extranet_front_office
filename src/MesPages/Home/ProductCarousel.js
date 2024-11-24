@@ -3,7 +3,7 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import ProductWrap from '../../Mescomposants/Product/ProductWrap'
 
-const ProductCarousel = ({ products, sectionTitle }) => {
+const ProductCarousel = ({ products, sectionTitle, imagelBaseUrl }) => {
   return (
     <>
      <h2 className="mb-4 sectionTitle">{sectionTitle}</h2>

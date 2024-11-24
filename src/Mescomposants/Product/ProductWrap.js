@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react"; // Importation de React et des hooks useState et useEffect
 import { NavLink } from "react-router-dom";
-import { crudData } from "../../services/apiService"; // Importation de la fonction crudData
+import { crudData, fullUrl } from "../../services/apiService"; // Importation de la fonction crudData
 import { toast } from "react-toastify";
+import { formatPrice } from "../../MesPages/Panier/Cart";
 
 const ProductWrap = ({
-    urlBaseImage,
     defaultImage,
     product,
     userData = {},
     col_css,
-    onSuccess
+    onSuccess,
 }) => {
     // Vérifier si les données utilisateur sont présentes dans localStorage
     // const userData = JSON.parse(localStorage.getItem('userData'));
@@ -66,7 +66,7 @@ const ProductWrap = ({
                             "LG_COMMID",
                             response.data.LG_COMMID
                         );
-                        onSuccess()
+                        onSuccess();
                         // toast.success(response.data.desc_statut);  // Notification de succès
                     } else if (response.data.code_statut === "0") {
                         toast.error(
@@ -98,7 +98,7 @@ const ProductWrap = ({
     return (
         <>
             <div className={` ${col_css}`}>
-                <div className="product-wrap">
+                <div className="product-wrap product-wrap-max-w">
                     <div className="product text-center">
                         <figure className="product-media">
                             <NavLink
@@ -111,13 +111,13 @@ const ProductWrap = ({
                                     //     ? defaultImage
                                     //     : urlBaseImage + product.ArtGPicID
                                     // }
-                                    src="assets/images/AMOXY-C1KG-FACE.jpg"
+                                    src={`${product.ArtGPicID ? fullUrl + product.ArtGPicID : "assets/images/AMOXY-C1KG-FACE.jpg"}`}
                                     alt={product.ArtGPicID}
                                     width={300}
                                     height={338}
                                 />
                             </NavLink>
-                           {/* {userData && userData.STR_UTITOKEN && (
+                            {/* {userData && userData.STR_UTITOKEN && (
                                 <div className="product-action-horizontal">
                                     <button
                                         className="btn-product-icon btn-cart w-icon-cart cursor-pointer"
@@ -128,12 +128,11 @@ const ProductWrap = ({
                             <a href="#" className="btn-product-icon btn-compare w-icon-compare" title="Compare" /> 
                                     <a href="#" className="btn-product-icon btn-quickview w-icon-eye" title="Vue rapide" />
                                     </div>)}*/}
-                            
                         </figure>
                         <NavLink to={"/detail-produit"} onClick={handleClick}>
                             <div className="product-details">
                                 <div className="product-cat">
-                                    <a>{product.ArtCategEnu}</a>
+                                    <a>{product?.ArtCateg}</a>
                                 </div>
                                 <h3 className="product-name">
                                     <a>{product.ArtLib}</a>
@@ -150,7 +149,10 @@ const ProductWrap = ({
                                 {userData && userData.STR_UTITOKEN && (
                                     <div className="product-pa-wrapper">
                                         <div className="product-price">
-                                            {product.ArtPrixBase} FCFA
+                                            {formatPrice(
+                                                parseInt(product?.ArtPrixBase)
+                                            )}{" "}
+                                            FCFA
                                         </div>
                                     </div>
                                 )}
@@ -166,8 +168,10 @@ const ProductWrap = ({
                     <div className="minipopup-box show" style={{ top: 0 }}>
                         <div className="product product-list-sm  product-cart">
                             <figure className="product-media">
-                                <NavLink to={"/detail-produit"}
-                                        onClick={handleClick}>
+                                <NavLink
+                                    to={"/detail-produit"}
+                                    onClick={handleClick}
+                                >
                                     <img
                                         src="assets/images/products/AMOXY-C1KG-FACE.jpg"
                                         alt="Product"

@@ -1,8 +1,7 @@
 // src/components/Accueil.js
-import React, { useState, useEffect, useContext } from 'react'; // Importation de React et des hooks useState et useEffect
+import React, { useState, useEffect } from 'react'; // Importation de React et des hooks useState et useEffect
 import TopBar from '../../Mescomposants/TopBar'
 import AppMenu from '../../Mescomposants/AppMenu'
-import MobileMenu from '../../Mescomposants/MobileMenu'
 import Footer from '../../Mescomposants/Footer'
 import ProductGallery from '../../Mescomposants/ProductGallery'
 import ProductSideBar from '../../Mescomposants/ProductSideBar'
@@ -56,9 +55,6 @@ const Accueil = () => {
   //       console.error('Erreur lors de la récupération des données:', error);
   //     });
   // };
-
-
-
   const fetchData = (params, url, setProcutData) => {
     setIsLoading(true); // Activez le statut de chargement avant la requête
     crudData(params, url)

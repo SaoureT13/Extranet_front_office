@@ -21,7 +21,9 @@ const getFullUrl = () => {
   return `${protocol}//${hostname}/`;
 };
 
-const fullUrl = getFullUrl();
+
+export const fullUrl = getFullUrl();
+console.log(fullUrl)
 // const fullUrl = "https://djx.975.mytemp.website/";
 
 // +++++++++++++++ FONCTION +++++++++++++++++++
@@ -126,6 +128,7 @@ const mode = {
 
 
   listCategorieplaceEvenementMode:'listCategorieplaceEvenement',
+  getProductListGammeAndCategoryMode: 'getProductListGammeAndCategory'
   
 };
 
@@ -192,7 +195,9 @@ const imageRuptureStock= "images/produits/AMOXY-C1KG-FACE.jpg";
 
 localStorage.setItem("defaultImage", defaultImage);
 localStorage.setItem("imageRuptureStock", imageRuptureStock);
-localStorage.setItem("urlBaseImage", fullUrl + urlBaseImage);
+// localStorage.setItem("urlBaseImage", fullUrl + urlBaseImage);
+localStorage.setItem("urlBaseImage", "/images/img1.jpeg");
+
 
 
 // localStorage.setItem('userData', JSON.stringify(userData));

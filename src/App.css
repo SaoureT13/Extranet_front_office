@@ -389,3 +389,14 @@ overflow: scroll;
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.table-min-h{
+  min-height: 704px !important;
+}
+
+.margin-auto{
+  margin-top: auto !important
+}
+.padding-0{
+  padding: 0 !important;
+}

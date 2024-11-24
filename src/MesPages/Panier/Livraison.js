@@ -40,6 +40,30 @@ const Livraison = ({ onSuccess, param = {} }) => {
     const [deliveryAddress, setDeliveryAddress] = useState(null);
     const [isLoadingSpinner, setIsLoadingSpinner] = useState(false);
 
+    /*Pagination*/
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemPerPage = 4;
+    const [currentData, setCurrentData] = useState([]);
+    let indexOfLastItem = currentPage * itemPerPage;
+    let indexOfFirstItem = indexOfLastItem - itemPerPage;
+
+    useEffect(() => {
+        setCurrentData(productData.slice(indexOfFirstItem, indexOfLastItem));
+    }, [currentPage, productData]);
+
+    const handleNextPage = () => {
+        if (indexOfLastItem < productData.length) {
+            setCurrentPage((prevPage) => prevPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (indexOfFirstItem > 0) {
+            setCurrentPage((prevPage) => prevPage - 1);
+        }
+    };
+    /*Pagination*/
+
     const fetchZoneData = (params, url) => {
         setIsLoading(true);
         crudData(params, url)
@@ -258,7 +282,7 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                         value="default"
                                                         selected="selected"
                                                     >
-                                                        Choisissez votre mode de
+                                                        Choisissez votre zone de
                                                         livraison
                                                     </option>
                                                     {zones &&
@@ -317,10 +341,73 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                                     </b>
                                                                 </th>
                                                             </tr>
+                                                            <tr>
+                                                            <div className="d-flex justify-content-end margin-auto">
+                                                {productData && (
+                                                    <div className="toolbox toolbox-pagination justify-content-between padding-0">
+                                                    <ul className="pagination">
+                                                        <li className={`prev ${
+                                                          indexOfFirstItem -
+                                                          1 <
+                                                      0
+                                                          ? "disabled"
+                                                          : ""
+                                                        }`}>
+                                                            <a onClick={
+                                                                    handlePreviousPage
+                                                                }
+                                                                className={`${
+                                                                    indexOfFirstItem -
+                                                                        1 <
+                                                                    0
+                                                                        ? "disabled"
+                                                                        : ""
+                                                                }`}
+                                                                disabled={
+                                                                    indexOfFirstItem -
+                                                                        1 <
+                                                                    0
+                                                                        ? true
+                                                                        : false
+                                                                } aria-label="Previous">
+                                                                <i className="w-icon-long-arrow-left"></i>
+                                                                Prec
+                                                            </a>
+                                                        </li>
+                                                        <li className={`next ${indexOfLastItem +
+                                                              1 >
+                                                          productData.length
+                                                              ? "disabled"
+                                                              : "bg-[#F4F7F9]"}`}>
+                                                            <a
+                                                            onClick={handleNextPage}
+                                                            className={`${indexOfLastItem +
+                                                              1 >
+                                                          productData.length
+                                                              ? "disabled"
+                                                              : "bg-[#F4F7F9]"}`}
+                                                                aria-label="Next"
+                                                                disabled={
+                                                                  indexOfLastItem +
+                                                                      1 >
+                                                                  productData.length
+                                                                      ? true
+                                                                      : false
+                                                              }
+                                                            >
+                                                                Suiv{" "}
+                                                                <i className="w-icon-long-arrow-right"></i>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                )}
+                                            </div>
+                                                            </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {productData &&
-                                                                productData.map(
+                                                            {currentData &&
+                                                                currentData.map(
                                                                     (
                                                                         item,
                                                                         index

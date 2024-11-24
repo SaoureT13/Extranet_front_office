@@ -1,42 +1,45 @@
 import React, { useState } from 'react';
 
-const EncoursComponent = ({totalAmount}) => {
-
+const EncoursComponent = ({totalAmount, clisolde}) => {
+ 
+  console.log(clisolde)
+  
   // Les données d'exemple
   const [data, setData] = useState({
-    encours: 3000000, 
-    commande: 1700000,
+    encours: clisolde, 
     panier: totalAmount
   });
 
+  console.log(data.encours)
   // Calcul de l'encours restant
-  const encoursRestant = data.encours - (data.commande + totalAmount);
+  const encoursRestant = clisolde > 0 ? clisolde - totalAmount : 0;
+  console.log(clisolde)
 
   return (
     <div style={styles.container}>
       <div style={styles.barContainer}>
-        <div style={{ ...styles.bar, ...styles.commande, width: `${(data.commande / data.encours) * 100}%` }}>
-          {/* Commandes {data.commande.toLocaleString()} */}
-        </div>
-        <div style={{ ...styles.bar, ...styles.panier, width: `${(totalAmount / data.encours) * 100}%` }}>
+        {/* <div style={{ ...styles.bar, ...styles.commande, width: `${(data.commande / data.encours) * 100}%` }}>
+          Commandes {data.commande.toLocaleString()}
+        </div> */}
+        <div style={{ ...styles.bar, ...styles.panier, width: `${(totalAmount / clisolde) * 100}%` }}>
           {/* Panier {data.panier.toLocaleString()} */}
         </div>
-        <div style={{ ...styles.bar, ...styles.restant, width: `${(encoursRestant / data.encours) * 100}%` }}>
+        <div style={{ ...styles.bar, ...styles.restant, width: `${(encoursRestant /clisolde) * 100}%` }}>
           {/* En cours restant */}
         </div>
       </div>
       
 
       <div style={styles.footer}>
-        <span>Commandes {data.commande.toLocaleString()}</span>
-        <span>Panier {totalAmount ? totalAmount.toLocaleString() : 0}</span>
-        <span>{encoursRestant.toLocaleString()}</span>
+        {/* <span>Commandes {data.commande.toLocaleString()}</span> */}
+        <span>Panier: {totalAmount ? totalAmount.toLocaleString() : 0}</span>
+        <span>Encours: {encoursRestant > 0 ? encoursRestant.toLocaleString() : "Pas d'encours"}</span>
       </div>
 
       <div style={styles.footer}>
-        <span>Encours du 27/09 au 27/10</span>
-        <span>{data.encours.toLocaleString()}</span>
-        <span>{(data.commande + data.panier).toLocaleString()}</span>
+        {/* <span>Encours du 27/09 au 27/10</span> */}
+        {/* <span>{data.encours.toLocaleString()}</span> */}
+        {/* <span>{(data.commande + data.panier).toLocaleString()}</span> */}
       </div>
 
     </div>
@@ -71,10 +74,12 @@ const styles = {
     whiteSpace: 'nowrap',
   },
   commande: {
-    backgroundColor: '#3656a1',
+    backgroundColor: '#6c92dd',
+
   },
   panier: {
-    backgroundColor: '#6c92dd',
+    backgroundColor: '#3656a1',
+
   },
   restant: {
     backgroundColor: '#bad3fb',

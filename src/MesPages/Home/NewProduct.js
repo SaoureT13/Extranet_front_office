@@ -6,7 +6,7 @@ import ProductWrap from '../../Mescomposants/Product/ProductWrap'
 const NewProduct = ({defaultImage, param, products, onSuccess }) => {
   return (
     <>
-     <h2 className="mb-4 sectionTitle">Nouveaux arrivages</h2>
+     <h2 className="mb-4 sectionTitle">Liste des produits</h2>
      {/* <Splide
       options={{
         type: 'loop',

@@ -111,13 +111,23 @@ const ExtranetSlider = ({ numberSlidesToShow,defaultImage, slideMargin,ImagelBas
                 <ul className="splide__list">
                   {sliderDatas && sliderDatas.map((image, index) => (
                     <li className="splide__slide" key={index}>
-                      <div
+                      {/* <div
                         className="hero__slide"
-                        data-bg={{ backgroundImage: `url(${getImageName(image.STR_BANPATH) === "" ? 'assets/img/bg/slide__bg-2.jpg':  ImagelBaseUrl + image.STR_BANPATH })` }}
-                        style={{ backgroundImage: `url(${getImageName(image.STR_BANPATH) === "" ? 'assets/img/bg/slide__bg-2.jpg':  ImagelBaseUrl + image.STR_BANPATH })` }}
+                        data-bg={{ backgroundImage: `url(${getImageName(image.STR_BANPATH) === "" ? 'assets/img/bg/slide__bg-2.jpg':  ImagelBaseUrl })` }}
+                        style={{ backgroundImage: `url(${getImageName(image.STR_BANPATH) === "" ? 'assets/img/bg/slide__bg-2.jpg':  ImagelBaseUrl })` }}
+                        alt={image.STR_BANPATH}
+                      > */}
+
+                        <div
+                        className="hero__slide"
+                        // data-bg={{ backgroundImage: `url(${getImageName(image.STR_BANPATH) === "" ? 'assets/img/bg/slide__bg-2.jpg':  ImagelBaseUrl })` }}
+                        style={{ backgroundImage: `url(assets/images/img1.jpeg)` , backgroundSize: "cover"}}
                         alt={image.STR_BANPATH}
                       >
-                        <img src={getImageName(image.STR_BANPATH) === "" ? 'assets/img/bg/slide__bg-2.jpg': ImagelBaseUrl + image.STR_BANPATH } />
+                        {/* <img src={getImageName(image.STR_BANPATH) === "" ? 'assets/img/bg/slide__bg-2.jpg': ImagelBaseUrl + image.STR_BANPATH } /> */}
+                            {/* <img src={getImageName(image.STR_BANPATH) === "" ? 'assets/img/bg/slide__bg-2.jpg': ImagelBaseUrl } /> */}
+
+                            <img src="assets/images/img1.jpeg" alt='banner' />
                         <div className="hero__content">
                           {/* <h2 className="hero__title">
                             Savage Beauty <sub className="green">9.8</sub>

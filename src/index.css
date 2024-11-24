@@ -2,19 +2,18 @@
     background-color: rgba(0, 0, 0, 0.7) !important;
 }
 
-.data-rmiz-modal-content img{
+.data-rmiz-modal-content img {
     max-width: 300px !important;
     max-height: 300px !important;
 }
 
-.bgUserConnected{
+.bgUserConnected {
     background-color: #bad3fb !important;
 }
 
-.bgUserDisConnected{
+.bgUserDisConnected {
     background-color: #f7f7f7 !important;
 }
-
 
 .bgUserDisConnected .header-bottom {
     /* border-bottom: 1px solid #214293 !important; */
@@ -22,14 +21,13 @@
     color: #214293 !important;
 }
 
-
 .bgUserConnected .header-bottom {
     /* border-bottom: 1px solid #214293 !important; */
     background-color: #fff !important;
     color: #214293 !important;
 }
 
-.header-left{
+.header-left {
     margin: 0 auto !important;
 }
 
@@ -37,59 +35,45 @@
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px !important;
 }
 
-.product-details{
+.product-details {
     background-color: #edf1fa !important;
     padding: 5px !important;
 }
-
 
 .product-wrap {
     position: relative;
     overflow: hidden;
     transition: transform 0.3s ease;
-  }
-  
-  .product-media  {
+}
+
+.product-media {
     transition: transform 0.3s ease; /* Transition douce pour l'effet de zoom */
-  }
-  
-  .product-wrap:hover {
+}
+
+.product-wrap:hover {
     transform: scale(1.1); /* Agrandir l'image à 110% lors du survol */
-  }
+}
 
-
-  .sectionTitle{
+.sectionTitle {
     background-color: #3656a1;
     padding: 10px;
     color: white;
     display: inline-block;
     border-radius: 5px;
     font-size: 20px;
-  }
-  
+}
 
-
-  .fs_header_1_4rem{
+.fs_header_1_4rem {
     font-size: 1.4rem;
+}
 
-  }
-
-
-
-  @media (min-width: 992px) {
+@media (min-width: 992px) {
     .row .main-content {
         max-width: 100% !important;
     }
 }
 
-
-
-
-
-
 /* Header */
-
-
 
 .cart-dropdown .cart-count {
     position: absolute;
@@ -109,34 +93,33 @@
     text-align: center;
 }
 
-
-
-
 /*  */
 
-
-.product-single .quantity, .product-single .btn-cart, .product-single .btn-product-icon , .cart .form-control{
+.product-single .quantity,
+.product-single .btn-cart,
+.product-single .btn-product-icon,
+.cart .form-control {
     border-radius: 12px;
-    border-style : Solid;
-    border-color : #3656A1;
-    border-color : rgba(54, 86, 161, 1);
-    border-width : 2px;
-    opacity : 0.6;
+    border-style: Solid;
+    border-color: #3656a1;
+    border-color: rgba(54, 86, 161, 1);
+    border-width: 2px;
+    opacity: 0.6;
 }
 
 .input-group .form-control {
     font-size: 2.3rem !important;
     padding: 0 1.4rem 0 1.8rem;
     color: var(--snproveci-blue-2);
-    opacity : 1;
+    opacity: 1;
 }
 
-
-.quantity-minus,  .w-icon-plus {
-    border-style : Solid !important;
-    border-color : #3656A1 !important;
-    border-color : rgba(54, 86, 161, 1) !important;
-    border-width : 3px !important;
+.quantity-minus,
+.w-icon-plus {
+    border-style: Solid !important;
+    border-color: #3656a1 !important;
+    border-color: rgba(54, 86, 161, 1) !important;
+    border-width: 3px !important;
     margin-left: 15px !important;
 }
 
@@ -154,38 +137,81 @@
     color: var(--snproveci-blue-2);
     font-size: 1.4rem;
     border: none;
-    
 }
 
-.p-5{
-        padding: 20px !important;
+.p-5 {
+    padding: 20px !important;
 }
 
-.mx-2{
+.mx-2 {
     margin: 10px !important;
 }
 
-.bg-blue-light{
+.bg-blue-light {
     background-color: #dfe9fb !important;
 }
 
 /* Stylisation du container card-header */
 .card-header {
     padding: 1rem 2.7rem;
-  }
-  
-  /* Stylisation des boutons radio */
-  .form-check-input {
+}
+
+/* Stylisation des boutons radio */
+.form-check-input {
     width: 20px;
     height: 20px;
     margin-right: 10px;
     accent-color: var(--snproveci-blue-2); /* Change la couleur */
-  }
-  
-  /* Stylisation du label des boutons radio */
-  .form-check-label {
+}
+
+/* Stylisation du label des boutons radio */
+.form-check-label {
     font-size: 1.4rem;
     color: var(--snproveci-blue-2);
     font-weight: 400;
-  }
-  
+}
+
+.product-qty-form-updated {
+    flex: 0 0 18rem !important;
+    max-width: 18rem !important;
+}
+
+.input-field {
+    padding-right: 30px; /* Ajustez la valeur selon la taille du SVG */
+    margin-bottom: 0px !important;
+}
+
+.password-icon {
+    position: absolute;
+    right: 10px; /* Ajustez la valeur selon vos besoins */
+    top: 50%;
+    transform: translateY(
+        -50%
+    ); /* Pour éviter que le SVG ne bloque les clics sur l'input */
+    cursor: pointer;
+}
+
+.height-updated {
+    height: 4rem !important;
+    margin-bottom: 20px !important;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    margin-bottom: 20px;
+}
+
+.max-width-164 {
+    max-width: 164px !important;
+}
+
+.color-white-font {
+    color: white !important;
+    font-weight: 700 !important;
+}
+
+.product-wrap-max-w {
+    max-width: 225px !important;
+}

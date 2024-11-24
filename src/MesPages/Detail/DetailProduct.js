@@ -13,6 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import ErrorCard from '../../Mescomposants/ErrorCard';
 import ProductCarousel from '../Home/ProductCarousel'
 import 'react-toastify/dist/ReactToastify.css';
+import { formatPrice } from '../Panier/Cart';
 
 
 const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) => {
@@ -87,6 +88,7 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
     const params = {
       mode: param.mode.getProductMode,
       LG_PROID: localStorage.getItem("selectedProductId"), // ID du produit à récupérer
+      ON_FRONT: true
     };
     fetchData(params, param.apiEndpointe.StockManagerEndPoint);
 
@@ -94,12 +96,12 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
 
     // Fonction pour gérer l'incrémentation
     const handleIncrement = () => {
-      setQuantity(prevQuantity => prevQuantity + 1);
+      setQuantity((prevQuantity) => parseInt(prevQuantity) + 1);
     };
   
     // Fonction pour gérer la décrémentation
     const handleDecrement = () => {
-      setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+      setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
     };
 
 
@@ -111,6 +113,8 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
       alert("Please select some product options before adding this product to your cart.");
       return;
     }
+
+
 
     if(quantity <= parseInt(productData.ArtStk) && quantity > 0){
       
@@ -144,6 +148,7 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
               if (response && response.status === 200){
                 if (response.data.code_statut === "1") {
                   localStorage.setItem('LG_COMMID', response.data.LG_COMMID)
+                  toast.success("Produit ajouté au panier"); // Notification de succès
                   onSuccess();
                 } else {
                   toast.error("Erreur : " + response.data.desc_statut);  // Notification d'erreur
@@ -164,7 +169,7 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
             setIsPopupOpen(false);
           }, 3000);
     }else{
-      // toast.error("Stock insuffisante");
+      toast.error("Stock insuffisante");
     }
 
   };
@@ -347,7 +352,7 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
                               </div>
                             </div> */}
                             <hr className="product-divider" />
-                            {param.userData != null && (<>  <div className="product-price">{parseInt(productData.ArtPrixBase)} FCFA</div> <hr className="product-divider" /></>)}
+                            {param.userData != null && (<>  <div className="product-price">{formatPrice(parseInt(productData?.ArtPrixBase))} FCFA</div> <hr className="product-divider" /></>)}
 
                             
                             {/* <div className="ratings-container">
@@ -409,8 +414,7 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
                               <div className="flex-wrap d-flex align-items-center product-variations">
                                 <a href="#" className="size">
                                   Small
-                                </a>
-                                <a href="#" className="size">
+                                </a href="#" className="size">
                                   Medium
                                 </a>
                                 <a href="#" className="size">
@@ -424,20 +428,18 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
                                 Clean All
                               </a>
                             </div> */}
-                            <div className="product-variation-price">
-                              <span />
-                            </div>
+                            
                             {param.userData != null && (
                               <div className="fix-bottom product-sticky-content sticky-content">
                                 <div className="product-form container">
-                                  <div className="product-qty-form mb-0">
+                                  <div className="product-qty-form mb-0 product-qty-form-updated">
                                     <div className="input-group">
                                       <input
                                         className="quantity form-control"
                                         type="number"
                                         min={1}
                                         value={quantity}
-                                        max={10000000}
+                                        max="100000"
                                         onChange={(e) => setQuantity(e.target.value)} // Gestion du changement de quantité
                                       />
                                       <button onClick={handleIncrement} className="quantity-plus w-icon-plus">
@@ -501,11 +503,11 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
                               Description
                             </a>
                           </li>
-                          <li className="nav-item">
+                          {/* <li className="nav-item">
                             <a href="#product-tab-specification" className="nav-link">
                               Specification
                             </a>
-                          </li>
+                          </li> */}
                           {/* <li className="nav-item">
                             <a href="#product-tab-vendor" className="nav-link">
                               Vendor Info
@@ -521,9 +523,6 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
                           <div className="tab-pane active pane-padding" id="product-tab-description">
                             <div className="row mb-4">
                               <div className="col-md-12 mb-5">
-                                <h4 className="title tab-pane-title font-weight-bold mb-2">
-                                  Detail
-                                </h4>
                                 <p className="mb-4">
                                   {productData.CmtTxt}
                                 </p>
@@ -549,7 +548,7 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
                               </div> */}
                             </div>
                           </div>
-                          <div className="tab-pane pane-padding" id="product-tab-specification">
+                          {/* <div className="tab-pane pane-padding" id="product-tab-specification">
                             <ul className="list-none">
                               <li>
                                 <label>Model</label>
@@ -568,7 +567,7 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
                                 <p>3 Months</p>
                               </li>
                             </ul>
-                          </div>
+                          </div> */}
                           <div className="tab-pane" id="product-tab-vendor">
                             <div className="row mb-3">
                               <div className="col-md-6 mb-4">
@@ -1739,7 +1738,7 @@ const DetailProduct = ({param = {},onSuccess, defaultImage, imageRuptureStock}) 
       </div>
       {/* End of Page Wrapper */}
       {/* Start of Sticky Footer */}
-      <div className="sticky-footer sticky-content fix-bottom">
+      <div className="sticky-footer sticky-content fix-bottom²">
         <a href="demo1.html" className="sticky-link active">
           <i className="w-icon-home" />
           <p>Home</p>

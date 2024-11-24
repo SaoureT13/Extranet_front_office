@@ -3,9 +3,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
 const ShopSidebar = ({ filters, onFilterChange }) => {
-  const [selectedCategories, setSelectedCategories] = useState(filters.categories || []);
-  const [selectedFamilies, setSelectedFamilies] = useState(filters.families || []);
-  const [selectedBrands, setSelectedBrands] = useState(filters.brands || []);
+  const [selectedCategories, setSelectedCategories] = useState(filters?.categories || []);
+  const [selectedFamilies, setSelectedFamilies] = useState(filters?.families || []);
+  const [selectedBrands, setSelectedBrands] = useState(filters?.brands || []);
+
+  const [categories, setCategories] = useState([]);
+  const [gammes, setGammes] = useState([]);
+
+  useEffect(() => {
+    setSelectedCategories(filters?.categories || []);
+    setSelectedFamilies(filters?.families || []);
+    setSelectedBrands(filters?.brands || []);
+  }, [filters]);
+
+  useEffect(()=>{
+    const filters = JSON.parse(localStorage.getItem('filters'))
+    setCategories(filters.categories)
+    setGammes(filters.gammes)
+  }, [])
 
   const handleCheckboxChange = (value, type) => {
     let updatedFilters = { ...filters };
@@ -57,7 +72,7 @@ const ShopSidebar = ({ filters, onFilterChange }) => {
         <div className="sticky-sidebar">
           <CollapsibleWidget title="Par catégories" defaultOpen={true}>
             <ul className="widget-body filter-items item-check mt-1">
-              {['ANTIBIOTIQUES'].map((category) => (
+              {categories?.map((category) => (
                 <li key={category}>
                   <label>
                     <input
@@ -72,7 +87,7 @@ const ShopSidebar = ({ filters, onFilterChange }) => {
             </ul>
           </CollapsibleWidget>
 
-          <CollapsibleWidget title="Par familles" defaultOpen={true}>
+          {/* <CollapsibleWidget title="Par familles" defaultOpen={true}>
             <ul className="widget-body filter-items item-check mt-1">
               {['Aviculture', 'Élevage Lapins', 'Élevage Porcs'].map((family) => (
                 <li key={family}>
@@ -87,11 +102,11 @@ const ShopSidebar = ({ filters, onFilterChange }) => {
                 </li>
               ))}
             </ul>
-          </CollapsibleWidget>
+          </CollapsibleWidget> */}
 
-          <CollapsibleWidget title="Par marques">
+          <CollapsibleWidget title="Par marques" defaultOpen={false}>
             <ul className="widget-body filter-items item-check">
-              {['LAPROVET', 'Brand B', 'Brand C'].map((brand) => (
+              {gammes?.map((brand) => (
                 <li key={brand}>
                   <label>
                     <input
