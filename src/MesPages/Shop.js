@@ -23,6 +23,7 @@ const getFiltersFromLocalStorage = () => {
                 families: [],
                 brands: [],
                 otherCriteria: [],
+                species: [],
             };
         }
         if (key === "gammes") {
@@ -31,6 +32,16 @@ const getFiltersFromLocalStorage = () => {
                 families: [],
                 brands: [value],
                 otherCriteria: [],
+                species: [],
+            };
+        }
+        if (key === "especes") {
+            return {
+                categories: [],
+                families: [],
+                brands: [],
+                otherCriteria: [],
+                species: [value],
             };
         }
     }
@@ -39,6 +50,7 @@ const getFiltersFromLocalStorage = () => {
         categories: [],
         families: [],
         brands: [],
+        species: [],
         otherCriteria: [],
     };
 };
@@ -69,9 +81,18 @@ const Shop = ({ param, defaultImage }) => {
             }
         };
 
+        const handleStorageChange = (event) => {
+            if (event.key === "cat") {
+                setFilters(getFiltersFromLocalStorage());
+            }
+        };
+    
+        window.addEventListener('storage', handleStorageChange);
+    
         return () => {
             // Restaurer la méthode originale pour éviter les conflits
             localStorage.setItem = originalSetItem;
+            window.removeEventListener('storage', handleStorageChange);
         };
     }, []);
 
@@ -145,6 +166,13 @@ const Shop = ({ param, defaultImage }) => {
             if (filters.brands && filters.brands.length > 0) {
                 filtered = filtered.filter((product) =>
                     filters.brands.includes(product.ArtGamme)
+                );
+            }
+            if (filters.species && filters.species.length > 0) {
+                filtered = filtered.filter((product) =>
+                    product.ArtSpecies.split("/").some((species) =>
+                        filters.species.includes(species)
+                    )
                 );
             }
 

@@ -231,10 +231,11 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                 if (localStorage.getItem("userData")) {
                     // Suppression de 'userData' si présent dans le localStorage
                     localStorage.removeItem("userData");
+                    window.location.replace("/extranet/");
                     console.log("userData supprimé du localStorage");
                 }
-
-                window.location.reload(); // Actualise la page
+                
+                // Actualise la page
             } else {
                 setError(userData.desc_statut);
             }

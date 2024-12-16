@@ -48,13 +48,13 @@ const ProductGallery = ({
                                                 image.src &&
                                                 image.src !== "" &&
                                                 image.src != null 
-                                                    ? fullUrl + image.src : param.urlBaseImage + defaultImage
+                                                    ? fullUrl + image.src : fullUrl + defaultImage
                                             }
                                             alt={
                                                 image.alt || "Image du produit"
                                             }
-                                            width={image.width}
-                                            height={image.height}
+                                            width={500}
+                                            height={500}
                                         />
                                     </Zoom>
                                 </figure>
@@ -65,7 +65,7 @@ const ProductGallery = ({
                             <figure className="product-image">
                                 <Zoom>
                                     <img
-                                        src={defaultImage}
+                                        src={fullUrl + defaultImage}
                                         alt="Default Product"
                                         width="500"
                                         height="500"
@@ -96,11 +96,11 @@ const ProductGallery = ({
                                         image.src != null &&
                                         getImageName(image.src) != ""
                                             ? fullUrl + image.src
-                                            : param.urlBaseImage + defaultImage
+                                            : fullUrl + defaultImage
                                     }
                                     alt="Product Thumb"
-                                    width={image.width}
-                                    height={image.height}
+                                    width={500}
+                                    height={500}
                                 />
                             </SwiperSlide>
                         ))}

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useContext } from "react"; // Importation de React et des hooks useState et useEffect
 import { NavLink } from "react-router-dom";
-import { crudData, fullUrl } from "../../services/apiService"; // Importation de la fonction crudData
+import { crudData, defaultImage, fullUrl } from "../../services/apiService"; // Importation de la fonction crudData
 import { toast } from "react-toastify";
 import { formatPrice } from "../../MesPages/Panier/Cart";
 
 const ProductWrap = ({
-    defaultImage,
     product,
     userData = {},
     col_css,
@@ -111,7 +110,11 @@ const ProductWrap = ({
                                     //     ? defaultImage
                                     //     : urlBaseImage + product.ArtGPicID
                                     // }
-                                    src={`${product.ArtGPicID ? fullUrl + product.ArtGPicID : "assets/images/AMOXY-C1KG-FACE.jpg"}`}
+                                    src={`${
+                                        product.ArtGPicID
+                                            ? fullUrl + product.ArtGPicID
+                                            : fullUrl + defaultImage
+                                    }`}
                                     alt={product.ArtGPicID}
                                     width={300}
                                     height={338}

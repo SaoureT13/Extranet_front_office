@@ -217,7 +217,6 @@ const Accueil = ({ param, defaultImage, onSuccess }) => {
                                 sectionTitle="Nos produits"
                                 imagelBaseUrl={param.urlBaseImage}
                             />
-
                             <SpecialPromoSlider ImagelBaseUrl={urlBaseImage} />
 
                             <NewProduct

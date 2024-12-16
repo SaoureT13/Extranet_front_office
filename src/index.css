@@ -215,3 +215,18 @@
 .product-wrap-max-w {
     max-width: 225px !important;
 }
+
+.item-hover:hover{
+    cursor: pointer !important;
+}
+
+.remove-top-and-bottom-padding {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-top: 0 !important;
+}
+
+.p{
+    padding: 1.2rem !important;
+  margin: 0 !important;
+}

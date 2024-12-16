@@ -1,6 +1,14 @@
 // src/services/apiService.js
+import { format, parse } from "date-fns";
+import { fr } from "date-fns/locale";
 
 import axios from 'axios';
+
+
+export function formatDateSecond(rawDate){
+  const date = parse(rawDate, "yyyy-MM-dd HH:mm:ss", new Date());
+  return format(date, "MMM do, yyyy HH:mm", { locale: fr });
+}
 
 const getRootUrl = (port) => {
   const originWithoutPort = window.location.protocol + '//' + window.location.hostname;
@@ -120,15 +128,20 @@ const mode = {
   updateCommproduitMode:'updateCommproduit',
   doConnexionMode:'doConnexion',
   getZoneLivraisonMode:'getDeliveryPlace',
+  listProductByCommandeMode: 'listProductByCommande',
 
   getClientPanierMode : 'getClientPanier',
   validationCommandeMode : 'validationCommande',
   getExternalClientPanierMode : 'getExternalClientPanier',
+  listClientCommandeMode : 'listClientCommande',
+  getClientCalendarMode : 'getClientCalendar',
+  getProductsMode: 'getProducts',
 
 
 
   listCategorieplaceEvenementMode:'listCategorieplaceEvenement',
-  getProductListGammeAndCategoryMode: 'getProductListGammeAndCategory'
+  getProductListGammeAndCategoryMode: 'getProductListGammeAndCategory',
+  markProductAsViewedMode: "markProductAsViewed",
   
 };
 
@@ -142,6 +155,7 @@ const paths = {
   clientList: "/liste-client",
   ticketList: "/liste-ticket",
   detailClient: "/detail-client",
+  mesCommandes: "/mes-commandes",
 
 
   dashboard: "/tableau-bord",
@@ -159,6 +173,7 @@ const paths = {
 const apiEndpointe = {
   StockManagerEndPoint: 'StockManager.php',
   CommandeManagerEndPoint: 'CommandeManager.php',
+  ConfigurationManagerEndPoint: 'ConfigurationManager.php',
 };
 
 const errorImageUrl = {
@@ -190,10 +205,11 @@ const userDatas = {
   LG_COMMID:'353493'
 }
 
-const defaultImage= "images/produits/AMOXY-C1KG-FACE.jpg";
+export const defaultImage= "extranetbackend/backoffice/images/default-product-image.jpg";
+
 const imageRuptureStock= "images/produits/AMOXY-C1KG-FACE.jpg";
 
-localStorage.setItem("defaultImage", defaultImage);
+localStorage.setItem("defaultImage", JSON.stringify(defaultImage));
 localStorage.setItem("imageRuptureStock", imageRuptureStock);
 // localStorage.setItem("urlBaseImage", fullUrl + urlBaseImage);
 localStorage.setItem("urlBaseImage", "/images/img1.jpeg");

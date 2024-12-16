@@ -16,9 +16,8 @@ import { NavLink } from "react-router-dom";
 // import MainContent from './MainContent';
 // import Header from './components/Header'; // Importation du composant Header
 import { useNavigate } from "react-router-dom"; // Utilisez useNavigate pour la redirection
-import { fetchEvenements, crudData, fullUrl } from "../../services/apiService"; // Importation de la fonction fetchEvenements depuis le fichier apiService
-import ErrorCard from "../../Mescomposants/ErrorCard";
-import ProductWrap from "../../Mescomposants/Product/ProductWrap";
+import { crudData, fullUrl } from "../../services/apiService"; // Importation de la fonction fetchEvenements depuis le fichier apiService
+import CSVUploader from "../../Mescomposants/CSVUploader/CsvUploader";
 
 const Cart = ({ onSuccess, param = {} }) => {
     const { theme, toggleTheme } = useTheme();
@@ -42,6 +41,12 @@ const Cart = ({ onSuccess, param = {} }) => {
     const [isLoading, setIsLoading] = useState(false);
     const userData = JSON.parse(localStorage.getItem("userData"));
     const [cart, setCart] = useState([]);
+    const [csvData, setCsvData] = useState([]);
+
+    const handleCsvData = (data) => {
+        setCsvData(data);
+    }
+
 
     //   useEffect(() => {
     //     const user = JSON.parse(localStorage.getItem('userData'));
@@ -130,7 +135,7 @@ const Cart = ({ onSuccess, param = {} }) => {
                         fetchPanierData(
                             paramPanier,
                             apiEndpointe.CommandeManagerEndPoint,
-                            setProductData
+                            setCart
                         );
                     } else if (response.data.code_statut === "0") {
                         toast.error("Erreur : " + response.data.desc_statut); // Notification d'erreur
@@ -221,7 +226,7 @@ const Cart = ({ onSuccess, param = {} }) => {
 
     const LG_COMMID = localStorage.getItem("LG_COMMID");
 
-    const fetchPanierData = (params, url, setProductData) => {
+    const fetchPanierData = (params, url, setCart) => {
         setIsLoading(true);
         crudData(params, url)
             .then((response) => {
@@ -251,7 +256,6 @@ const Cart = ({ onSuccess, param = {} }) => {
             LG_AGEID: userData?.LG_AGEID,
         };
         fetchData(params, apiEndpointe.CommandeManagerEndPoint, setProductData);
-        // const paramPanier = { mode: mode.getClientPanierMode,LG_COMMID: localStorage.getItem('LG_COMMID'),};
         const paramPanier = {
             mode: mode.getClientPanierMode,
             LG_AGEID: userData?.LG_AGEID,
@@ -259,7 +263,7 @@ const Cart = ({ onSuccess, param = {} }) => {
         fetchPanierData(
             paramPanier,
             apiEndpointe.CommandeManagerEndPoint,
-            setProductData
+            setCart
         );
     }, []);
 
@@ -301,9 +305,9 @@ const Cart = ({ onSuccess, param = {} }) => {
                     {/* End of Breadcrumb */}
                     {/* Start of PageContent */}
                     <div className="page-content">
-                        <div className="container">
+                        <div className="container bg-blue-light">
                             <div
-                                className="row gutter-lg mb-10 page-contnainer bg-blue-light p-5"
+                                className="row gutter-lg  page-contnainer p-5"
                                 style={{ minHeight: "314px" }}
                             >
                                 {productData || productData.length > 0 ? (
@@ -653,8 +657,8 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                 }
                                                                 className="btn btn-block btn-dark btn-icon-right btn-rounded  btn-checkout"
                                                             >
-                                                                Proceder au
-                                                                payement
+                                                                Proceder à la
+                                                                validation
                                                                 <i className="w-icon-long-arrow-right"></i>
                                                             </NavLink>
                                                         </div>
@@ -670,6 +674,17 @@ const Cart = ({ onSuccess, param = {} }) => {
                                         Votre panier est vide.
                                     </p>
                                 )}
+                            </div>
+                            <div className="">
+                                <div
+                                    className="mb-4"
+                                    style={{
+                                        padding: "2.3rem 3rem 3rem 3rem",
+                                        lineHeight: 1,
+                                    }}
+                                >
+                                    <CSVUploader onHandlePanierData={setCart} fetchData={fetchData} onHandleProductData={setProductData} fetchPanierData={fetchPanierData} data={csvData} onHandlesetData={handleCsvData} params={param} onHandleSuccess={onSuccess} />
+                                </div>
                             </div>
                         </div>
                     </div>

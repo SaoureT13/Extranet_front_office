@@ -69,19 +69,19 @@ const MainNav = ({ param, megaMenu }) => {
                       submenu: [
                           {
                               label: "Calendrier de livraison",
-                              href: "/extranet/livraison",
+                              href: "/livraison",
                           },
                           {
-                              label: "Vos en cours",
+                              label: "Mes en cours",
                               href: "vendor-wcfm-store-list.html",
                           },
                           {
-                              label: "Vos commandes",
-                              href: "vendor-wcmp-store-list.html",
+                              label: "Mes commandes",
+                              href: "/mes-commandes",
                           },
                           {
-                              label: "Vos factures",
-                              href: "vendor-wc-store-list.html",
+                              label: "Mes factures",
+                              href: "",
                           },
                           {
                               label: "Administration",

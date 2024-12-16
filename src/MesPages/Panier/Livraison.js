@@ -153,6 +153,7 @@ const Livraison = ({ onSuccess, param = {} }) => {
                 if (response.status === 200) {
                     if (response.data.code_statut === "1") {
                         toast.success("Commande valider avec succès");
+                        toast.success(response.data.desc_statut);
                         setCart([]);
                         setSelectedZone(null);
                         setDeliveryAddress(null);
@@ -169,9 +170,10 @@ const Livraison = ({ onSuccess, param = {} }) => {
                     "Erreur lors de la récupération des données:",
                     error
                 );
-            }).finally(()=>{
-                setIsLoadingSpinner(false);
             })
+            .finally(() => {
+                setIsLoadingSpinner(false);
+            });
     };
 
     useEffect(() => {
@@ -302,7 +304,9 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label>Adresse de livraison *</label>
+                                            <label>
+                                                Adresse de livraison *
+                                            </label>
                                             <input
                                                 type="text"
                                                 className="form-control form-control-md"
@@ -342,67 +346,80 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                                 </th>
                                                             </tr>
                                                             <tr>
-                                                            <div className="d-flex justify-content-end margin-auto">
-                                                {productData && (
-                                                    <div className="toolbox toolbox-pagination justify-content-between padding-0">
-                                                    <ul className="pagination">
-                                                        <li className={`prev ${
-                                                          indexOfFirstItem -
-                                                          1 <
-                                                      0
-                                                          ? "disabled"
-                                                          : ""
-                                                        }`}>
-                                                            <a onClick={
-                                                                    handlePreviousPage
-                                                                }
-                                                                className={`${
-                                                                    indexOfFirstItem -
-                                                                        1 <
-                                                                    0
-                                                                        ? "disabled"
-                                                                        : ""
-                                                                }`}
-                                                                disabled={
-                                                                    indexOfFirstItem -
-                                                                        1 <
-                                                                    0
-                                                                        ? true
-                                                                        : false
-                                                                } aria-label="Previous">
-                                                                <i className="w-icon-long-arrow-left"></i>
-                                                                Prec
-                                                            </a>
-                                                        </li>
-                                                        <li className={`next ${indexOfLastItem +
-                                                              1 >
-                                                          productData.length
-                                                              ? "disabled"
-                                                              : "bg-[#F4F7F9]"}`}>
-                                                            <a
-                                                            onClick={handleNextPage}
-                                                            className={`${indexOfLastItem +
-                                                              1 >
-                                                          productData.length
-                                                              ? "disabled"
-                                                              : "bg-[#F4F7F9]"}`}
-                                                                aria-label="Next"
-                                                                disabled={
-                                                                  indexOfLastItem +
-                                                                      1 >
-                                                                  productData.length
-                                                                      ? true
-                                                                      : false
-                                                              }
-                                                            >
-                                                                Suiv{" "}
-                                                                <i className="w-icon-long-arrow-right"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                )}
-                                            </div>
+                                                                <div className="d-flex justify-content-end margin-auto">
+                                                                    {productData && (
+                                                                        <div className="toolbox toolbox-pagination justify-content-between padding-0">
+                                                                            <ul className="pagination">
+                                                                                <li
+                                                                                    className={`prev ${
+                                                                                        indexOfFirstItem -
+                                                                                            1 <
+                                                                                        0
+                                                                                            ? "disabled"
+                                                                                            : ""
+                                                                                    }`}
+                                                                                >
+                                                                                    <a
+                                                                                        onClick={
+                                                                                            handlePreviousPage
+                                                                                        }
+                                                                                        className={`${
+                                                                                            indexOfFirstItem -
+                                                                                                1 <
+                                                                                            0
+                                                                                                ? "disabled"
+                                                                                                : ""
+                                                                                        }`}
+                                                                                        disabled={
+                                                                                            indexOfFirstItem -
+                                                                                                1 <
+                                                                                            0
+                                                                                                ? true
+                                                                                                : false
+                                                                                        }
+                                                                                        aria-label="Previous"
+                                                                                    >
+                                                                                        <i className="w-icon-long-arrow-left"></i>
+                                                                                        Prec
+                                                                                    </a>
+                                                                                </li>
+                                                                                <li
+                                                                                    className={`next ${
+                                                                                        indexOfLastItem +
+                                                                                            1 >
+                                                                                        productData.length
+                                                                                            ? "disabled"
+                                                                                            : "bg-[#F4F7F9]"
+                                                                                    }`}
+                                                                                >
+                                                                                    <a
+                                                                                        onClick={
+                                                                                            handleNextPage
+                                                                                        }
+                                                                                        className={`${
+                                                                                            indexOfLastItem +
+                                                                                                1 >
+                                                                                            productData.length
+                                                                                                ? "disabled"
+                                                                                                : "bg-[#F4F7F9]"
+                                                                                        }`}
+                                                                                        aria-label="Next"
+                                                                                        disabled={
+                                                                                            indexOfLastItem +
+                                                                                                1 >
+                                                                                            productData.length
+                                                                                                ? true
+                                                                                                : false
+                                                                                        }
+                                                                                    >
+                                                                                        Suiv{" "}
+                                                                                        <i className="w-icon-long-arrow-right"></i>
+                                                                                    </a>
+                                                                                </li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -430,10 +447,14 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                                                 </span>
                                                                             </td>
                                                                             <td className="product-total">
-                                                                                {formatPrice(parseInt(
-                                                                                    item?.PlvPUNet
-                                                                                ) * parseInt(
-                                                                                    item?.PlvQteUV) )}{" "}
+                                                                                {formatPrice(
+                                                                                    parseInt(
+                                                                                        item?.PlvPUNet
+                                                                                    ) *
+                                                                                        parseInt(
+                                                                                            item?.PlvQteUV
+                                                                                        )
+                                                                                )}{" "}
                                                                                 fcfa
                                                                             </td>
                                                                         </tr>
@@ -448,10 +469,11 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                                 </td>
                                                                 <td>
                                                                     <b>
-                                                                        {
-                                                                            formatPrice(parseInt(cart?.dbl_commmtht))
-                                                                        }{" "}
-                                                                        
+                                                                        {formatPrice(
+                                                                            parseInt(
+                                                                                cart?.dbl_commmtht
+                                                                            )
+                                                                        )}{" "}
                                                                         FCFA
                                                                     </b>
                                                                 </td>
@@ -464,9 +486,11 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                                 </th>
                                                                 <td>
                                                                     <b>
-                                                                        {
-                                                                            formatPrice(parseInt(cart?.dbl_commmtttc))
-                                                                        }{" "}
+                                                                        {formatPrice(
+                                                                            parseInt(
+                                                                                cart?.dbl_commmtttc
+                                                                            )
+                                                                        )}{" "}
                                                                         FCFA
                                                                     </b>
                                                                 </td>
@@ -477,10 +501,14 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                         <button
                                                             type="button"
                                                             className="d-flex align-items-center justify-content-center btn btn-dark btn-block btn-rounded"
-                                                            onClick={handleCloture}
+                                                            onClick={
+                                                                handleCloture
+                                                            }
                                                         >
                                                             Valider la commande
-                                                            {isLoadingSpinner && <div class="loader ml-4"></div>}
+                                                            {isLoadingSpinner && (
+                                                                <div class="loader ml-4"></div>
+                                                            )}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -500,4 +528,3 @@ const Livraison = ({ onSuccess, param = {} }) => {
 };
 
 export default Livraison;
-
