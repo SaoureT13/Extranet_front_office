@@ -216,7 +216,7 @@
     max-width: 225px !important;
 }
 
-.item-hover:hover{
+.item-hover:hover {
     cursor: pointer !important;
 }
 
@@ -226,7 +226,28 @@
     border-top: 0 !important;
 }
 
-.p{
+.p {
     padding: 1.2rem !important;
-  margin: 0 !important;
+    margin: 0 !important;
+}
+
+.parent {
+    display: flex;
+    justify-content: space-between;
+    width: 320px;
+    border: 2px solid #3656a1;
+    border-radius: 10px;
+    padding: 0.4em;
+}
+.box-button {
+    display: flex;
+    justify-content: space-between;
+}
+
+.box-button button {
+    border: 2px solid #3656a1;
+    color: #3656a1;
+    padding: 0.4em;
+    border-radius: 99%;
+    background: transparent;
 }

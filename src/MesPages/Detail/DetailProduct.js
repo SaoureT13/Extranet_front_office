@@ -37,17 +37,6 @@ const DetailProduct = ({
     const [popupContent, setPopupContent] = useState({});
     const [isLoadingSpinner, setIsLoadingSpinner] = useState(false);
 
-    // Fonction pour récupérer les données depuis l'API
-    // const fetchData = (params, apiEndpointe) => {
-    //   crudData(params, apiEndpointe)
-    //     .then(response => {
-    //       const products = response.data.products;
-    //       setProductData(products[0]); // Assuming the first product is the one we want
-    //     })
-    //     .catch(error => {
-    //       console.error('Erreur lors de la récupération des données:', error);
-    //     });
-    // };
 
     const fetchData = (params, url, setProcutData) => {
         setIsLoading(true); // Activez le statut de chargement avant la requête

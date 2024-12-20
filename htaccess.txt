@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Réécriture pour pointer vers /extranet
+    RewriteCond %{REQUEST_URI} !^/extranet/
+    RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|otf|txt|json)$
+    RewriteRule ^(.*)$ /extranet/$1 [L]
+
+    # Servir index.html par défaut pour les routes React
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ /extranet/index.html [L]
+</IfModule>
+

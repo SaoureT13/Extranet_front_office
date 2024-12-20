@@ -175,15 +175,15 @@ const MainNav = ({ param, megaMenu }) => {
                                                     {item.submenu.map(
                                                         (subItem, subIndex) => (
                                                             <li key={subIndex}>
-                                                                <a
-                                                                    href={
+                                                                <NavLink
+                                                                    to={
                                                                         subItem.href
                                                                     }
                                                                 >
                                                                     {
                                                                         subItem.label
                                                                     }
-                                                                </a>
+                                                                </NavLink>
                                                                 {subItem.submenu &&
                                                                     subItem
                                                                         .submenu

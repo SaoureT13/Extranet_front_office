@@ -189,7 +189,7 @@ const CSVUploader = ({
 
     return (
         <div style={{}}>
-            <h2>Charger votre fichier de commande</h2>
+            <h2>Charger un fichier de commande</h2>
             <p style={{ marginTop: "-20px" }}>
                 Choisissez un fichier au format <u>csv</u>
             </p>
@@ -206,7 +206,7 @@ const CSVUploader = ({
                     marginBottom: "20px",
                 }}
             >
-                Sélectionner un fichier
+                Sélectionner fichier
             </label>
             <input
                 id="file-upload"
@@ -288,13 +288,13 @@ const CSVUploader = ({
                                         <td style={tableCellStyle}>
                                             {row.str_prodescription}
                                         </td>
-                                        <td style={tableCellStyle}>
+                                        <td style={{ ...tableCellStyle, textAlign: "right" }}>
                                             {formatPrice(row.int_propricevente)}
                                         </td>
-                                        <td style={tableCellStyle}>
+                                        <td style={{ ...tableCellStyle, textAlign: "center" }}>
                                             {row.int_cprquantity}
                                         </td>
-                                        <td style={tableCellStyle}>
+                                        <td style={{ ...tableCellStyle, textAlign: "right" }}>
                                             {formatPrice(row.dbl_montant)}
                                         </td>
                                     </tr>

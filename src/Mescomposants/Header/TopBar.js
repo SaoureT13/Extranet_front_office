@@ -231,7 +231,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                 if (localStorage.getItem("userData")) {
                     // Suppression de 'userData' si présent dans le localStorage
                     localStorage.removeItem("userData");
-                    window.location.replace("/extranet/");
+                    window.location.replace("/");
                     console.log("userData supprimé du localStorage");
                 }
                 

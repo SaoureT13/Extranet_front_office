@@ -15,9 +15,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 // import MainContent from './MainContent';
 // import Header from './components/Header'; // Importation du composant Header
 import { useNavigate } from "react-router-dom"; // Utilisez useNavigate pour la redirection
-import { fetchEvenements, crudData } from "../../services/apiService"; // Importation de la fonction fetchEvenements depuis le fichier apiService
-import ErrorCard from "../../Mescomposants/ErrorCard";
-import ProductWrap from "../../Mescomposants/Product/ProductWrap";
+import { crudData } from "../../services/apiService"; // Importation de la fonction fetchEvenements depuis le fichier apiService
 import { formatPrice } from "./Cart";
 
 const Livraison = ({ onSuccess, param = {} }) => {
@@ -39,6 +37,7 @@ const Livraison = ({ onSuccess, param = {} }) => {
     const [selectedZone, setSelectedZone] = useState(null);
     const [deliveryAddress, setDeliveryAddress] = useState(null);
     const [isLoadingSpinner, setIsLoadingSpinner] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     /*Pagination*/
     const [currentPage, setCurrentPage] = useState(1);
@@ -146,6 +145,32 @@ const Livraison = ({ onSuccess, param = {} }) => {
             });
     };
 
+    useEffect(() => {
+        if (isSuccess) {
+            let isRequestSent = false;
+
+            if (!isRequestSent) {
+                const payload = {
+                    mode: "sendEmail",
+                    LG_LSTID: "MSG_ORDER_VALIDATION",
+                };
+                try {
+                    crudData(payload, "ConfigurationManager.php").then(
+                        (response) => {
+                            const { desc_statut, code_statut } = response.data;
+                            if (code_statut !== "0") {
+                                console.log("error");
+                            }
+                            isRequestSent = true;
+                        }
+                    );
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+    }, [isSuccess]);
+
     const ClotuteCommproduit = (params, url) => {
         setIsLoadingSpinner(true);
         crudData(params, url)
@@ -159,6 +184,7 @@ const Livraison = ({ onSuccess, param = {} }) => {
                         setDeliveryAddress(null);
                         setProductData([]);
                         onSuccess();
+                        setIsSuccess(true);
                         navigate("/");
                     } else {
                         toast.error("Erreur : " + response.data.desc_statut);

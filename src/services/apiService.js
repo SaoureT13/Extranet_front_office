@@ -85,7 +85,7 @@ const doDisConnexion = (params) => {
 const crudData = (params,apiUrl) => {
   return axios.post(`${rootUrl}${apiUrl}`, params, {
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'multipart/form-data'
     }
   });
 };
@@ -102,6 +102,27 @@ const today = new Date(); // Date du jour
 
 // Formater les dates en 'YYYY-MM-DD' (en retirant la partie heure)
 const formatDate = (date) => date.toISOString().split('T')[0];
+
+export function convertToFormData(data) {
+  const formData = new FormData();
+
+  // Parcourir les clés de l'objet principal
+  Object.keys(data).forEach((key) => {
+    if (Array.isArray(data[key])) {
+      // Si la clé est un tableau (par ex: "documents")
+      data[key].forEach((item, index) => {
+        Object.keys(item).forEach((subKey) => {
+          formData.append(`${key}[${index}][${subKey}]`, item[subKey]);
+        });
+      });
+    } else {
+      // Si ce n'est pas un tableau
+      formData.append(key, data[key]);
+    }
+  });
+
+  return formData;
+}
 
 // Obtenir la date du dernier jour du mois prochain
 
