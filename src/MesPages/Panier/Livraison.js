@@ -15,11 +15,13 @@ import { useTheme } from "../../contexts/ThemeContext";
 // import MainContent from './MainContent';
 // import Header from './components/Header'; // Importation du composant Header
 import { useNavigate } from "react-router-dom"; // Utilisez useNavigate pour la redirection
-import { crudData } from "../../services/apiService"; // Importation de la fonction fetchEvenements depuis le fichier apiService
+import { adminEmail, crudData } from "../../services/apiService"; // Importation de la fonction fetchEvenements depuis le fichier apiService
 import { formatPrice } from "./Cart";
+import { useOrdersContext } from "../../contexts/OrdersContext";
 
 const Livraison = ({ onSuccess, param = {} }) => {
     const { theme, toggleTheme } = useTheme();
+    const { fetchUserSumAmountOrders } = useOrdersContext();
 
     const mode = JSON.parse(localStorage.getItem("appMode"));
     const date = JSON.parse(localStorage.getItem("appDate"));
@@ -69,7 +71,7 @@ const Livraison = ({ onSuccess, param = {} }) => {
             .then((response) => {
                 setIsLoading(false);
                 if (response && response.status === 200) {
-                    const zones = response.data.zone_de_livraison || []; // Ensure it's an array
+                    const zones = response.data.data || []; // Ensure it's an array
                     setZones(Array.isArray(zones) ? zones : []); // Safeguard to ensure it's an array
                     setStatusCode(response.status);
                 } else {
@@ -153,6 +155,7 @@ const Livraison = ({ onSuccess, param = {} }) => {
                 const payload = {
                     mode: "sendEmail",
                     LG_LSTID: "MSG_ORDER_VALIDATION",
+                    TO: adminEmail,
                 };
                 try {
                     crudData(payload, "ConfigurationManager.php").then(
@@ -185,6 +188,7 @@ const Livraison = ({ onSuccess, param = {} }) => {
                         setProductData([]);
                         onSuccess();
                         setIsSuccess(true);
+                        fetchUserSumAmountOrders();
                         navigate("/");
                     } else {
                         toast.error("Erreur : " + response.data.desc_statut);
@@ -227,7 +231,11 @@ const Livraison = ({ onSuccess, param = {} }) => {
                 apiEndpointe.CommandeManagerEndPoint,
                 setProductData
             );
-            const paramsZone = { mode: mode.getZoneLivraisonMode };
+            const paramsZone = {
+                mode: mode.getZoneLivraisonMode,
+                LIMIT: 9000,
+                PAGE: 1,
+            };
             fetchZoneData(paramsZone, apiEndpointe.CommandeManagerEndPoint);
         }
     }, [navigate]);

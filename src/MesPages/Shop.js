@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import TopBar from "../Mescomposants/Header/TopBar";
 import AppMenu from "../Mescomposants/AppMenu";
 import MobileMenu from "../Mescomposants/MobileMenu";
@@ -9,235 +9,195 @@ import { fetchEvenements, crudData } from "../services/apiService";
 import ErrorCard from "../Mescomposants/ErrorCard";
 import ProductWrap from "../Mescomposants/Product/ProductWrap";
 import Pagination from "../Mescomposants/Pagination/Pagination"; // Import the new Pagination component
+import { useSearchParams } from "react-router-dom";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { generatePageNumbers } from "../services/lib";
 
-const getFiltersFromLocalStorage = () => {
-    const activeFilter = JSON.parse(localStorage.getItem("cat")) || {};
-    const value = Object.values(activeFilter)[0] || null;
-    console.log(activeFilter);
-
-    if (value) {
-        const key = Object.keys(activeFilter)[0].toLowerCase();
-        if (key === "categories") {
-            return {
-                categories: [value],
-                families: [],
-                brands: [],
-                otherCriteria: [],
-                species: [],
-            };
-        }
-        if (key === "gammes") {
-            return {
-                categories: [],
-                families: [],
-                brands: [value],
-                otherCriteria: [],
-                species: [],
-            };
-        }
-        if (key === "especes") {
-            return {
-                categories: [],
-                families: [],
-                brands: [],
-                otherCriteria: [],
-                species: [value],
-            };
-        }
-    }
-
-    return {
-        categories: [],
-        families: [],
-        brands: [],
-        species: [],
-        otherCriteria: [],
-    };
-};
 const Shop = ({ param, defaultImage }) => {
-    const [productData, setProcutData] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
-    const [currentProducts, setCurrentProducts] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [filters, setFilters] = useState(getFiltersFromLocalStorage);
-
-    const [searchKeyword, setSearchKeyword] = useState(""); // New state for search
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(12);
-    let indexOfLastItem = currentPage * itemsPerPage;
-    let indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-    const [totalProducts, setTotalProducts] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [activeFilters, setActiveFilters] = useState(() => {
+        const filters = {
+            gammes: [],
+            categories: [],
+            especes: [],
+            search: "",
+        };
+        searchParams.forEach((value, key) => {
+            filters[key] = value.split(",");
+        });
+        delete filters.limit;
+        delete filters.page;
+        console.log(filters);
+        return filters;
+    });
+    const [page, setPage] = useState(() => {
+        return parseInt(searchParams.get("page")) || 1;
+    });
+    const [limit, setLimit] = useState(() => {
+        return parseInt(searchParams.get("limit")) || 20;
+    });
 
     useEffect(() => {
-        // Surveiller les modifications de localStorage dans le même onglet
-        const originalSetItem = localStorage.setItem;
-
-        localStorage.setItem = function (key, value) {
-            originalSetItem.apply(this, arguments); // Appeler l'original
-            if (key === "cat") {
-                // Met à jour l'état à chaque modification de "cat"
-                setFilters(getFiltersFromLocalStorage());
-            }
+        const updatedFilters = {
+            gammes: [],
+            categories: [],
+            especes: [],
+            search: "",
         };
 
-        const handleStorageChange = (event) => {
-            if (event.key === "cat") {
-                setFilters(getFiltersFromLocalStorage());
-            }
-        };
-    
-        window.addEventListener('storage', handleStorageChange);
-    
-        return () => {
-            // Restaurer la méthode originale pour éviter les conflits
-            localStorage.setItem = originalSetItem;
-            window.removeEventListener('storage', handleStorageChange);
-        };
-    }, []);
+        searchParams.forEach((value, key) => {
+            updatedFilters[key] = value.split(",");
+        });
 
-    const fetchData = (params, url) => {
-        setIsLoading(true);
-        // Remplace cette ligne avec ton API pour récupérer les produits
-        crudData(params, url)
-            .then((response) => {
-                setIsLoading(false);
-                if (response && response.status === 200) {
-                    const produits = response.data.products;
-                    setProcutData(produits);
-                    setFilteredProducts(produits); // Initialize with all products
-                    setTotalProducts(
-                        response.data.totalProducts || produits.length
-                    );
+        setActiveFilters(updatedFilters);
+    }, [searchParams]);
+
+    const handleActiveFilters = useCallback(
+        (filterName, filterValue) => {
+            setActiveFilters((prevActiveFilters) => {
+                const updatedFilters = structuredClone(prevActiveFilters);
+
+                if (!updatedFilters[filterName]) {
+                    updatedFilters[filterName] = [filterValue];
+                } else if (updatedFilters[filterName].includes(filterValue)) {
+                    updatedFilters[filterName] = updatedFilters[
+                        filterName
+                    ].filter((val) => val !== filterValue);
                 } else {
-                    console.error("Erreur HTTP:", response);
+                    updatedFilters[filterName].push(filterValue);
                 }
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                console.error("Erreur:", error);
+
+                const params = new URLSearchParams();
+                Object.keys(updatedFilters).forEach((key) => {
+                    if (updatedFilters[key].length > 0) {
+                        params.set(key, updatedFilters[key].join(","));
+                    }
+                });
+                params.set("limit", limit);
+                params.set("page", 1);
+                setSearchParams(params);
+
+                return updatedFilters;
             });
+        },
+        [setSearchParams, limit]
+    );
+
+    const handleClearActiveFilters = () => {
+        setSearchParams({});
     };
 
-    const handleNextPage = () => {
-        if (indexOfLastItem < productData.length) {
-            setCurrentPage((prevPage) => prevPage + 1);
+    const goToPage = (page) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("page", page);
+        setSearchParams(params);
+        setPage(page);
+    };
+
+    const handleSetLimit = (limit) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("limit", limit);
+        params.set("page", 1);
+        setSearchParams(params);
+        setPage(1);
+        setLimit(limit);
+    };
+
+    const handleSearch = (e) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("page", 1);
+        params.set("search", e);
+        setSearchParams(params);
+        setPage(1);
+        setActiveFilters({
+            ...activeFilters,
+            search: e,
+        });
+    };
+
+    const fetchProducts = async (activeFilters) => {
+        const data = new URLSearchParams();
+
+        for (const key in activeFilters) {
+            if (key === "search") {
+                data.append("FILTER_OPTIONS[search]", activeFilters[key]);
+            }
+            if (key === "categories") {
+                activeFilters[key].forEach((value) => {
+                    data.append("FILTER_OPTIONS[str_procateg][]", value);
+                });
+            }
+            if (key === "especes") {
+                activeFilters[key].forEach((value) => {
+                    data.append("FILTER_OPTIONS[str_proespece][]", value);
+                });
+            }
+            if (key === "gammes") {
+                activeFilters[key].forEach((value) => {
+                    data.append("FILTER_OPTIONS[str_progamme][]", value);
+                });
+            }
+        }
+
+        data.append("LIMIT", limit);
+        data.append("PAGE", page);
+        data.append("mode", "listProduct");
+
+        try {
+            const response = await crudData(data, "StockManager.php", false);
+            setTotalPage(() => {
+                return Math.ceil(response.data["total"] / limit);
+            });
+            return response.data["products"];
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    const handlePreviousPage = () => {
-        if (indexOfFirstItem > 0) {
-            setCurrentPage((prevPage) => prevPage - 1);
-        }
-    };
+    const { data, isLoading } = useQuery({
+        queryKey: ["products", activeFilters, page, limit],
+        queryFn: () => fetchProducts(activeFilters),
+        placeholderData: keepPreviousData,
+    });
 
+    const [pageNumbers, setPageNumbers] = useState([]);
     useEffect(() => {
-        const params = {
-            mode: param.mode.listProductMode,
-            STR_UTITOKEN: param.userData ? param.userData.STR_UTITOKEN : "", // Ensure userData is not null
-            length: 10000, //itemsPerPage.toString(),
-            start: 1, //((currentPage - 1) * itemsPerPage).toString(),
-        };
-        fetchData(params, param.apiEndpointe.StockManagerEndPoint);
-    }, [currentPage]);
-
-    // Apply filters and search to the products
-    useEffect(() => {
-        const applyFiltersAndSearch = () => {
-            if (!productData || productData.length === 0) {
-                setFilteredProducts([]); // No products found, reset the list
-                setTotalProducts(0);
-                return;
-            }
-
-            let filtered = productData;
-
-            // Apply category, family, brand filters
-            if (filters.categories && filters.categories.length > 0) {
-                filtered = filtered.filter((product) =>
-                    filters.categories.includes(product.ArtCateg)
-                );
-            }
-            if (filters.families && filters.families.length > 0) {
-                filtered = filtered.filter((product) =>
-                    filters.families.includes(product.ArtFamilleEnu)
-                );
-            }
-            if (filters.brands && filters.brands.length > 0) {
-                filtered = filtered.filter((product) =>
-                    filters.brands.includes(product.ArtGamme)
-                );
-            }
-            if (filters.species && filters.species.length > 0) {
-                filtered = filtered.filter((product) =>
-                    product.ArtSpecies.split("/").some((species) =>
-                        filters.species.includes(species)
-                    )
-                );
-            }
-
-            // Apply search keyword
-            if (searchKeyword.trim() !== "") {
-                filtered = filtered.filter(
-                    (product) =>
-                        product.ArtLib.toLowerCase().includes(
-                            searchKeyword.toLowerCase()
-                        ) ||
-                        product.ArtCode.toLowerCase().includes(
-                            searchKeyword.toLowerCase()
-                        )
-                );
-            }
-
-            setFilteredProducts(filtered);
-            setTotalProducts(filtered.length);
-        };
-
-        applyFiltersAndSearch();
-    }, [filters, searchKeyword, productData]);
-
-    const handleFilterChange = (newFilters) => {
-        setFilters(newFilters);
-    };
-
-    const handleSearchChange = (e) => {
-        setSearchKeyword(e.target.value);
-    };
-
-    useEffect(() => {
-        setCurrentProducts(
-            filteredProducts.slice(indexOfFirstItem, indexOfLastItem)
-        );
-    }, [currentPage, filteredProducts]);
-
-    // const currentProducts = filteredProducts.slice(0, itemsPerPage);
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [currentPage]);
+        setPageNumbers(generatePageNumbers(totalPage, page));
+    }, [page, totalPage]);
 
     return (
         <div className={` ${param.userData ? "bgUserConnected" : ""}`}>
             <div className="page-wrapper">
                 <main className="main mb-0 pb-1">
                     <div className="page-content">
-                        <div className="container">
-                            <div className="shop-content row gutter-lg mb-10 page-container">
+                        <div className="container pt-5">
+                            <div
+                                className="shop-content row mb-10 page-container m-0 ml-0"
+                                style={{ gap: "20px" }}
+                            >
                                 <ShopSidebar
-                                    filters={filters}
-                                    onFilterChange={handleFilterChange}
+                                    onFilterChange={handleActiveFilters}
+                                    activeFilters={activeFilters}
+                                    onResetAllFilters={handleClearActiveFilters}
                                 />
 
-                                <div className="main-content">
+                                <div className="main-content pr-0 pl-0">
                                     {/* Search bar */}
-                                    <div className="search-bar mb-4">
+                                    <div className="search-bar mb-4" style={{}}>
                                         <input
                                             type="text"
-                                            className="form-control color-white-font"
+                                            className="form-control"
+                                            style={{
+                                                color: "#336699",
+                                                borderColor: "#336699",
+                                                borderWidth: "2px",
+                                            }}
                                             placeholder="Rechercher un produit..."
-                                            value={searchKeyword}
-                                            onChange={handleSearchChange}
+                                            value={activeFilters.search}
+                                            onChange={(e) =>
+                                                handleSearch(e.target.value)
+                                            }
                                         />
                                     </div>
 
@@ -245,9 +205,10 @@ const Shop = ({ param, defaultImage }) => {
                                         <div className="loading-container d-block mx-auto">
                                             Loading...
                                         </div>
-                                    ) : filteredProducts.length > 0 ? (
-                                        <div className="product-wrapper row cols-md-3 cols-sm-2 cols-2">
-                                            {currentProducts.map((product) => (
+                                    ) : data !== undefined &&
+                                      data.length > 0 ? (
+                                        <div className="product-wrapper row cols-xl-4 cols-md-3 cols-sm-1 cols-1">
+                                            {data.map((product) => (
                                                 <ProductWrap
                                                     key={product.ArtID}
                                                     product={product}
@@ -256,7 +217,8 @@ const Shop = ({ param, defaultImage }) => {
                                                         param.urlBaseImage
                                                     }
                                                     userData={param.userData}
-                                                    col_css="col-xl-3 col-lg-3 col-4"
+                                                    // col_css="col-xl-3 col-lg-3 col-4"
+                                                    col_css="d-flex justify-content-center w"
                                                 />
                                             ))}
                                         </div>
@@ -264,9 +226,10 @@ const Shop = ({ param, defaultImage }) => {
                                         <div>Aucun produit trouvé.</div>
                                     )}
                                     <Pagination
-                                        currentPage={currentPage}
-                                        totalPages={totalPages}
-                                        onPageChange={setCurrentPage}
+                                        currentPage={page}
+                                        totalPages={totalPage}
+                                        onPageChange={goToPage}
+                                        pageNumbers={pageNumbers}
                                     />
                                 </div>
                             </div>

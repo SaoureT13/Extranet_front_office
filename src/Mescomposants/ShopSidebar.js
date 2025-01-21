@@ -2,181 +2,57 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 
-const ShopSidebar = ({ filters, onFilterChange }) => {
-    const [selectedCategories, setSelectedCategories] = useState(
-        filters?.categories || []
-    );
-    const [selectedFamilies, setSelectedFamilies] = useState(
-        filters?.families || []
-    );
-    const [selectedBrands, setSelectedBrands] = useState(filters?.brands || []);
-    const [selectedSpecies, setSelectedSpecies] = useState(
-        filters?.species || []
-    );
-
-    const [categories, setCategories] = useState([]);
-    const [gammes, setGammes] = useState([]);
-    const [species, setSpecies] = useState([]);
-
-    useEffect(() => {
-        setSelectedCategories(filters?.categories || []);
-        setSelectedFamilies(filters?.families || []);
-        setSelectedBrands(filters?.brands || []);
-        setSelectedSpecies(filters?.species || []);
-    }, [filters]);
-
-    useEffect(() => {
-        const filters = JSON.parse(localStorage.getItem("filters"));
-        setCategories(filters.categories);
-        setGammes(filters.gammes);
-        setSpecies(filters.especes);
-    }, []);
-
-    const handleCheckboxChange = (value, type) => {
-        let updatedFilters = { ...filters };
-
-        if (type === "categories") {
-            if (selectedCategories.includes(value)) {
-                updatedFilters.categories = selectedCategories.filter(
-                    (cat) => cat !== value
-                );
-            } else {
-                updatedFilters.categories = [...selectedCategories, value];
-            }
-            setSelectedCategories(updatedFilters.categories);
-        } else if (type === "families") {
-            if (selectedFamilies.includes(value)) {
-                updatedFilters.families = selectedFamilies.filter(
-                    (fam) => fam !== value
-                );
-            } else {
-                updatedFilters.families = [...selectedFamilies, value];
-            }
-            setSelectedFamilies(updatedFilters.families);
-        } else if (type === "brands") {
-            if (selectedBrands.includes(value)) {
-                updatedFilters.brands = selectedBrands.filter(
-                    (brand) => brand !== value
-                );
-            } else {
-                updatedFilters.brands = [...selectedBrands, value];
-            }
-            setSelectedBrands(updatedFilters.brands);
-        } else if (type === "species") {
-            if (selectedSpecies.includes(value)) {
-                updatedFilters.species = selectedSpecies.filter(
-                    (spec) => spec !== value
-                );
-            } else {
-                updatedFilters.species = [...selectedSpecies, value];
-            }
-            setSelectedSpecies(updatedFilters.species);
-        }
-
-        // Call the parent handler to update filters
-        onFilterChange(updatedFilters);
-    };
-
-    // Function to reset all filters
-    const resetFilters = () => {
-        setSelectedCategories([]);
-        setSelectedFamilies([]);
-        setSelectedBrands([]);
-        setSelectedSpecies([]);
-
-        // Reset the filters object passed to the parent component
-        onFilterChange({
-            categories: [],
-            families: [],
-            brands: [],
-            species: [],
-        });
-    };
+const ShopSidebar = ({ onFilterChange, onResetAllFilters, activeFilters }) => {
+    const filters = JSON.parse(localStorage.getItem("filters"));
 
     return (
         <aside className="sidebar shop-sidebar left-sidebar sticky-sidebar-wrapper sidebar-fixed page-container">
             <div className="sidebar-content scrollable p-3">
                 <div className="sticky-sidebar">
-                    <CollapsibleWidget
-                        title="Par catégories"
-                        defaultOpen={true}
-                    >
-                        <ul className="widget-body filter-items item-check mt-1">
-                            {categories?.map((category) => (
-                                <li key={category}>
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedCategories.includes(
-                                                category
-                                            )}
-                                            onChange={() =>
-                                                handleCheckboxChange(
-                                                    category,
-                                                    "categories"
-                                                )
-                                            }
-                                        />
-                                        {category}
-                                    </label>
-                                </li>
-                            ))}
-                        </ul>
-                    </CollapsibleWidget>
-
-                    <CollapsibleWidget title="Par espèces" defaultOpen={false}>
-                        <ul className="widget-body filter-items item-check mt-1">
-                            {species?.map((species) => (
-                                <li key={species}>
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedSpecies.includes(
-                                                species
-                                            )}
-                                            onChange={() =>
-                                                handleCheckboxChange(
-                                                    species,
-                                                    "species"
-                                                )
-                                            }
-                                        />
-                                        {species}
-                                    </label>
-                                </li>
-                            ))}
-                        </ul>
-                    </CollapsibleWidget>
-
-                    <CollapsibleWidget title="Par marques" defaultOpen={false}>
-                        <ul className="widget-body filter-items item-check">
-                            {gammes?.map((brand) => (
-                                <li key={brand}>
-                                    <label>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedBrands.includes(
-                                                brand
-                                            )}
-                                            onChange={() =>
-                                                handleCheckboxChange(
-                                                    brand,
-                                                    "brands"
-                                                )
-                                            }
-                                        />
-                                        {brand}
-                                    </label>
-                                </li>
-                            ))}
-                        </ul>
-                    </CollapsibleWidget>
+                    {filters &&
+                        Object.keys(filters).length > 0 &&
+                        Object.keys(filters).map((filter, index) => (
+                            <CollapsibleWidget
+                                title={`Par ${filter}`}
+                                defaultOpen={index === 0}
+                                key={index}
+                            >
+                                <ul className="widget-body filter-items item-check mt-1">
+                                    {filters[filter]?.map((category) => (
+                                        <li key={category}>
+                                            <label
+                                                className="checkbox"
+                                                htmlFor={category}
+                                            >
+                                                <input
+                                                    style={{
+                                                        cursor: "pointer",
+                                                    }}
+                                                    type="checkbox"
+                                                    checked={activeFilters[
+                                                        `${filter}`
+                                                    ]?.includes(category)}
+                                                    onChange={() =>
+                                                        onFilterChange(
+                                                            filter,
+                                                            category
+                                                        )
+                                                    }
+                                                    id={category}
+                                                />
+                                                {category}
+                                            </label>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CollapsibleWidget>
+                        ))}
 
                     {/* Reset Filters Button */}
                     <div className="reset-filters mt-4">
                         <button
                             className="btn btn-secondary"
-                            onClick={resetFilters}
+                            onClick={onResetAllFilters}
                         >
                             Réinitialiser les filtres
                         </button>

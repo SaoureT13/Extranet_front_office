@@ -1,51 +1,74 @@
 import React from "react";
 
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+const Pagination = ({ totalPages, currentPage, onPageChange, pageNumbers }) => {
     return (
         <div className="toolbox toolbox-pagination justify-content-between">
             <ul className="pagination">
                 <li className={`prev ${currentPage === 1 ? "disabled" : ""}`}>
-                    <a
+                    <button
+                        type="button"
+                        className="btn btn-link"
                         aria-label="Previous"
-                        onClick={() =>
-                            currentPage > 1 && onPageChange(currentPage - 1)
-                        }
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onPageChange(Math.max(1, currentPage - 1));
+                        }}
                     >
                         <i className="w-icon-long-arrow-left" />
-                        Prev
-                    </a>
+                        Prec
+                    </button>
                 </li>
 
-                {[...Array(totalPages)].map((_, index) => (
-                    <li
-                        key={index}
-                        className={`page-item ${
-                            currentPage === index + 1 ? "active" : ""
-                        }`}
-                    >
-                        <a
-                            className="page-link"
-                            onClick={() => onPageChange(index + 1)}
+                {pageNumbers.map((pageNumber, index) =>
+                    pageNumber === "..." ? (
+                        <span key={index} className="dots">
+                            ...
+                        </span>
+                    ) : (
+                        <li
+                            className={`page-item ${
+                                pageNumber === currentPage ? "active" : ""
+                            }`}
+                            key={index}
                         >
-                            {index + 1}
-                        </a>
-                    </li>
-                ))}
+                            {/* <buttonn class="page" href="#" data-i="1" data-page="8">
+                                                                </buttonn> */}
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    onPageChange(pageNumber);
+                                }}
+                                className={`page-link`}
+                                tabIndex="0"
+                                style={{
+                                    fontFamily: "inherit",
+                                    color: "inherit",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                {pageNumber}
+                            </button>
+                        </li>
+                    )
+                )}
 
                 <li
                     className={`next ${
                         currentPage === totalPages ? "disabled" : ""
                     }`}
                 >
-                    <a
+                    <button
+                        type="button"
                         aria-label="Next"
-                        onClick={() =>
-                            currentPage < totalPages &&
-                            onPageChange(currentPage + 1)
-                        }
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onPageChange(Math.min(totalPages, currentPage + 1));
+                        }}
+                        className="btn btn-link"
                     >
-                        Next <i className="w-icon-long-arrow-right" />
-                    </a>
+                        Suiv <i className="w-icon-long-arrow-right" />
+                    </button>
                 </li>
             </ul>
         </div>

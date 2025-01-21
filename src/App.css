@@ -400,3 +400,11 @@ overflow: scroll;
 .padding-0{
   padding: 0 !important;
 }
+
+.page-item.active{
+  color: #FFF;
+  background-color: #2b4fa3;
+}
+.page-item.active .page-link{
+  border: none;
+}

@@ -1,19 +1,17 @@
 // src/components/Accueil.js
-import React, { useState, useEffect, useContext } from "react"; // Importation de React et des hooks useState et useEffect
+import React, { useState, useEffect } from "react"; // Importation de React et des hooks useState et useEffect
 import AppMenu from "../../Mescomposants/AppMenu";
-import MobileMenu from "../../Mescomposants/MobileMenu";
-import Footer from "../../Mescomposants/Footer";
 import ProductGallery from "../../Mescomposants/ProductGallery";
-import ProductSideBar from "../../Mescomposants/ProductSideBar";
 import PhotoSwipe from "../../Mescomposants/PhotoSwipe";
 
-import { useNavigate } from "react-router-dom";
 import { crudData } from "../../services/apiService"; // Importation de la fonction crudData
-import { ToastContainer, toast } from "react-toastify";
 import ErrorCard from "../../Mescomposants/ErrorCard";
 import ProductCarousel from "../Home/ProductCarousel";
 import "react-toastify/dist/ReactToastify.css";
 import { formatPrice } from "../Panier/Cart";
+import { toast } from "react-toastify";
+import useFetch from "../../hooks/useFetch";
+import useRequest from "../../hooks/useRequest";
 
 const DetailProduct = ({
     param = {},
@@ -29,57 +27,101 @@ const DetailProduct = ({
     const [productData, setProductData] = useState(null);
     const [activeTab, setActiveTab] = useState("product-tab-specification");
     const [quantity, setQuantity] = useState(1); // Gestion de la quantité
-    const [statusCode, setStatusCode] = useState(null); // Code statut HTTP
+    const [statusCode, setStatusCode] = useState(200); // Code statut HTTP
     const [isLoading, setIsLoading] = useState(false);
 
     const [addedProducts, setAddedProducts] = useState([]);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [popupContent, setPopupContent] = useState({});
     const [isLoadingSpinner, setIsLoadingSpinner] = useState(false);
+    const [substitutionProducts, setSubstitutionProducts] = useState([]);
+    const [gallery, setGallery] = useState(null);
 
+    const { makeRequest } = useRequest();
 
-    const fetchData = (params, url, setProcutData) => {
-        setIsLoading(true); // Activez le statut de chargement avant la requête
-        crudData(params, url)
-            .then((response) => {
-                setIsLoading(false); // Désactivez le statut de chargement une fois la réponse reçue
-                if (response && response.status === 200) {
-                    const produitVeto = response.data.products;
-                    setProductData(produitVeto[0]);
-                    setStatusCode(response?.status);
-                } else {
-                    console.error("Erreur HTTP:", response);
-                    setStatusCode(response?.status || "Unknown error");
-                }
-            })
-            .catch((error) => {
-                setIsLoading(false);
-                if (error.response) {
-                    setStatusCode(error.response.status);
-                    console.error(
-                        "Erreur de réponse serveur:",
-                        error.response.status,
-                        error.response.data
-                    );
-                } else if (error.request) {
-                    setStatusCode(404);
-                    console.error("Erreur de requête:", error.request);
-                } else {
-                    setStatusCode("Request setup error");
-                    console.error("Erreur de configuration:", error.message);
-                    //   alert('Erreur: ' + error.message);
-                }
-            });
-    };
+    const formData = new FormData();
+    formData.append("mode", param.mode.getProductMode);
+    formData.append("LG_PROID", localStorage.getItem("selectedProductId"));
+    formData.append("ON_FRONT", true);
+
+    const { data, loading, error } = useFetch(
+        "StockManager.php",
+        { method: "POST" },
+        formData
+    );
 
     useEffect(() => {
-        const params = {
-            mode: param.mode.getProductMode,
-            LG_PROID: localStorage.getItem("selectedProductId"), // ID du produit à récupérer
-            ON_FRONT: true,
-        };
-        fetchData(params, param.apiEndpointe.StockManagerEndPoint);
-    }, []);
+        if (error != null) {
+            if (error === "Network Error") {
+                setStatusCode(404);
+            } else {
+                setStatusCode(500);
+            }
+        }
+    }, [error]);
+
+    useEffect(() => {
+        if (data) {
+            setProductData(data.products[0]);
+            fetchSubstitutionProducts();
+        }
+    }, [data]);
+
+    useEffect(() => {
+        if (productData) {
+            const fetchProductPictures = async () => {
+                const formData = new FormData();
+                formData.append("mode", param.mode.showAllProductImagesMode);
+                formData.append(
+                    "LG_PROID",
+                    localStorage.getItem("selectedProductId")
+                );
+                try {
+                    const response = await makeRequest(
+                        "ConfigurationManager.php",
+                        {
+                            method: "POST",
+                            data: formData,
+                            headers: {
+                                "Content-Type": "multipart/form-data",
+                            },
+                        }
+                    );
+
+                    if (response && response.code_statut === "1") {
+                        setGallery(response.data);
+                    } else {
+                        toast.error(response.desc_statut);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+
+            fetchProductPictures();
+        }
+    }, [productData]);
+
+    const fetchSubstitutionProducts = async () => {
+        const formData = new FormData();
+        formData.append("mode", param.mode.getSubstitutionProductsMode);
+        formData.append("LG_PROID", localStorage.getItem("selectedProductId"));
+        try {
+            const response = await makeRequest("StockManager.php", {
+                method: "POST",
+                data: formData,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response && response.products) {
+                setSubstitutionProducts(response.products);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     // Fonction pour gérer l'incrémentation
     const handleIncrement = () => {
@@ -147,7 +189,7 @@ const DetailProduct = ({
                         toast.error("Erreur survenu");
                     }
                 })
-                .catch((error) => {
+                .catch((error) => {shop-content
                     console.error("Erreur lors de l'ajout au panier:", error);
                 })
                 .finally(() => {
@@ -163,41 +205,41 @@ const DetailProduct = ({
         }
     };
 
-    useEffect(() => {
-        const currentProduct = JSON.parse(
-            localStorage.getItem("selectedProductId")
-        );
+    // useEffect(() => {
+    //     const currentProduct = JSON.parse(
+    //         localStorage.getItem("selectedProductId")
+    //     );
 
-        let payload = null
+    //     let payload = null;
 
-        if(param?.userData?.STR_UTITOKEN != null){
-            payload = {
-                mode: param.mode.markProductAsViewedMode,
-                LG_PROID: currentProduct,
-                STR_UTITOKEN: param?.userData?.STR_UTITOKEN
-            };
-        }else{
-            payload = {
-                mode: param.mode.markProductAsViewedMode,
-                LG_PROID: currentProduct,
-                STR_UTITOKEN:  "1",
-            };
-        }
+    //     if (param?.userData?.STR_UTITOKEN != null) {
+    //         payload = {
+    //             mode: param.mode.markProductAsViewedMode,
+    //             LG_PROID: currentProduct,
+    //             STR_UTITOKEN: param?.userData?.STR_UTITOKEN,
+    //         };
+    //     } else {
+    //         payload = {
+    //             mode: param.mode.markProductAsViewedMode,
+    //             LG_PROID: currentProduct,
+    //             STR_UTITOKEN: "1",
+    //         };
+    //     }
 
-        crudData(payload, param.apiEndpointe.ConfigurationManagerEndPoint)
-            .then((response) => {
-                if (response && response.status === 200) {
-                    if (response.data.code_statut !== "1") {
-                        console.log("Erreur dans le marquage");
-                    }
-                } else {
-                    toast.error("Erreur survenu");
-                }
-            })
-            .catch((error) => {
-                console.error("Erreur lors de l'ajout au panier:", error);
-            });
-    }, []);
+    //     crudData(payload, param.apiEndpointe.ConfigurationManagerEndPoint)
+    //         .then((response) => {
+    //             if (response && response.status === 200) {
+    //                 if (response.data.code_statut !== "1") {
+    //                     console.log("Erreur dans le marquage");
+    //                 }
+    //             } else {
+    //                 toast.error("Erreur survenu");
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             console.error("Erreur:", error);
+    //         });
+    // }, []);
 
     return (
         <>
@@ -210,7 +252,7 @@ const DetailProduct = ({
                     <AppMenu />
                     <div className="page-content">
                         <div className="container">
-                            {isLoading ? (
+                            {loading ? (
                                 <div className="text-center">
                                     <p>Chargement des produits...</p>
                                     <div
@@ -227,21 +269,6 @@ const DetailProduct = ({
                                     {productData && (
                                         <div className="row gutter-lg">
                                             <div className="main-content">
-                                                {/* {isPopupOpen && (
-                        <div className="alert alert-success alert-cart-product mb-2">
-                        {" "}
-                        <a href="cart.html" className="btn btn-success btn-rounded">
-                          View Carts
-                        </a>{" "}
-                        <p className="mb-0 ls-normal">
-                          “Fashion Table Sound Marker” has been added to your cart.
-                        </p>{" "}
-                        <a href="#" className="btn btn-link btn-close" aria-label="button">
-                          <i className="close-icon" />
-                        </a>{" "}
-                      </div>
-                          
-                      )} */}
                                                 <div className="product product-single row">
                                                     <ProductGallery
                                                         ArtStk={
@@ -251,9 +278,7 @@ const DetailProduct = ({
                                                         imageRuptureStock={
                                                             imageRuptureStock
                                                         }
-                                                        galerieImage={
-                                                            productData.gallerie
-                                                        }
+                                                        galerieImage={gallery}
                                                         defaultImage={
                                                             defaultImage
                                                         }
@@ -268,27 +293,6 @@ const DetailProduct = ({
                                                                     productData.ArtLib
                                                                 }
                                                             </h1>
-                                                            {/* <div className="product-bm-wrapper">
-                              <figure className="brand">
-                                <img
-                                  src="assets/images/products/brand/brand-6.jpg"
-                                  alt="Brand"
-                                  width={85}
-                                  height={48}
-                                />
-                              </figure>
-                              <div className="product-meta">
-                                <div className="product-categories">
-                                  Category:
-                                  <span className="product-category">
-                                    <a href="#">Electronics</a>
-                                  </span>
-                                </div>
-                                <div className="product-sku">
-                                  Stock: <span>{parseInt(productData.ArtStk)}</span>
-                                </div>
-                              </div>
-                            </div> */}
                                                             <hr className="product-divider" />
                                                             {param.userData !=
                                                                 null && (
@@ -305,81 +309,6 @@ const DetailProduct = ({
                                                                     <hr className="product-divider" />
                                                                 </>
                                                             )}
-
-                                                            {/* <div className="ratings-container">
-                              <div className="ratings-full">
-                                <span className="ratings" style={{ width: "80%" }} />
-                                <span className="tooltiptext tooltip-top" />
-                              </div>
-                              <a href="#product-tab-reviews" className="rating-reviews">
-                                (3 Reviews)
-                              </a>
-                            </div> */}
-                                                            {/* <div className="product-short-desc">
-                              <ul className="list-type-check list-style-none">
-                                <li>Ultrices eros in cursus turpis massa cursus mattis.</li>
-                                <li>Volutpat ac tincidunt vitae semper quis lectus.</li>
-                                <li>Aliquam id diam maecenas ultricies mi eget mauris.</li>
-                              </ul>
-                            </div> */}
-
-                                                            {/* <div className="product-form product-variation-form product-image-swatch">
-                              <label>Color:</label>
-                              <div className="d-flex align-items-center product-variations">
-                                <a href="#" className="image">
-                                  <img
-                                    src="assets/images/products/swatch/1-800x900.jpg"
-                                    alt="Product Swatch"
-                                    width={24}
-                                    height={24}
-                                  />
-                                </a>
-                                <a href="#" className="image">
-                                  <img
-                                    src="assets/images/products/swatch/7-800x900.jpg"
-                                    alt="Product Swatch"
-                                    width={24}
-                                    height={24}
-                                  />
-                                </a>
-                                <a href="#" className="image">
-                                  <img
-                                    src="assets/images/products/swatch/8-800x900.jpg"
-                                    alt="Product Swatch"
-                                    width={24}
-                                    height={24}
-                                  />
-                                </a>
-                                <a href="#" className="image">
-                                  <img
-                                    src="assets/images/products/swatch/14-800x900.jpg"
-                                    alt="Product Swatch"
-                                    width={24}
-                                    height={24}
-                                  />
-                                </a>
-                              </div>
-                            </div> */}
-                                                            {/* <div className="product-form product-variation-form product-size-swatch">
-                              <label className="mb-1">Size:</label>
-                              <div className="flex-wrap d-flex align-items-center product-variations">
-                                <a href="#" className="size">
-                                  Small
-                                </a href="#" className="size">
-                                  Medium
-                                </a>
-                                <a href="#" className="size">
-                                  Large
-                                </a>
-                                <a href="#" className="size">
-                                  Extra Large
-                                </a>
-                              </div>
-                              <a href="#" className="product-variation-clean">
-                                Clean All
-                              </a>
-                            </div> */}
-
                                                             {param.userData !=
                                                                 null && (
                                                                 <div className="fix-bottom product-sticky-content sticky-content">
@@ -452,37 +381,7 @@ const DetailProduct = ({
                                                                 </div>
                                                             )}
 
-                                                            <div className="social-links-wrapper">
-                                                                {/* <div className="social-links">
-                                <div className="social-icons social-no-color border-thin">
-                                  <a href="#" className="social-icon social-facebook w-icon-facebook"
-                                  />
-                                  <a href="#" className="social-icon social-twitter w-icon-twitter"
-                                  />
-                                  <a href="#" className="social-icon social-pinterest fab fa-pinterest-p"
-                                  />
-                                  <a href="#" className="social-icon social-whatsapp fab fa-whatsapp"
-                                  />
-                                  <a href="#" className="social-icon social-youtube fab fa-linkedin-in"
-                                  />
-                                </div>
-                              </div> */}
-                                                                {/* <span className="divider d-xs-show" />
-                              <div className="product-link-wrapper d-flex">
-                                <a
-                                  href="#"
-                                  className="btn-product-icon btn-wishlist w-icon-heart"
-                                >
-                                  <span />
-                                </a>
-                                <a
-                                  href="#"
-                                  className="btn-product-icon btn-compare btn-icon-left w-icon-compare"
-                                >
-                                  <span />
-                                </a>
-                              </div> */}
-                                                            </div>
+                                                            <div className="social-links-wrapper"></div>
 
                                                             <div className="tab tab-nav-boxed tab-nav-underline product-tabs">
                                                                 <ul
@@ -497,21 +396,6 @@ const DetailProduct = ({
                                                                             Description
                                                                         </a>
                                                                     </li>
-                                                                    {/* <li className="nav-item">
-                            <a href="#product-tab-specification" className="nav-link">
-                              Specification
-                            </a>
-                          </li> */}
-                                                                    {/* <li className="nav-item">
-                            <a href="#product-tab-vendor" className="nav-link">
-                              Vendor Info
-                            </a>
-                          </li>
-                          <li className="nav-item">
-                            <a href="#product-tab-reviews" className="nav-link">
-                              Customer Reviews (3)
-                            </a>
-                          </li> */}
                                                                 </ul>
                                                                 <div className="tab-content">
                                                                     <div
@@ -526,47 +410,8 @@ const DetailProduct = ({
                                                                                     }
                                                                                 </p>
                                                                             </div>
-                                                                            {/* <div className="col-md-6 mb-5">
-                                <div className="banner banner-video product-video br-xs">
-                                  <figure className="banner-media">
-                                    <a href="#">
-                                      <img
-                                        src="assets/images/products/video-banner-610x300.jpg"
-                                        alt="banner"
-                                        width={610}
-                                        height={300}
-                                        style={{ backgroundColor: "#bebebe" }}
-                                      />
-                                    </a>
-                                    <a
-                                      className="btn-play-video btn-iframe"
-                                      href="assets/video/memory-of-a-woman.mp4"
-                                    />
-                                  </figure>
-                                </div>
-                              </div> */}
                                                                         </div>
                                                                     </div>
-                                                                    {/* <div className="tab-pane pane-padding" id="product-tab-specification">
-                            <ul className="list-none">
-                              <li>
-                                <label>Model</label>
-                                <p>Skysuite 320</p>
-                              </li>
-                              <li>
-                                <label>Color</label>
-                                <p>Black</p>
-                              </li>
-                              <li>
-                                <label>Size</label>
-                                <p>Large, Small</p>
-                              </li>
-                              <li>
-                                <label>Guarantee Time</label>
-                                <p>3 Months</p>
-                              </li>
-                            </ul>
-                          </div> */}
                                                                     <div
                                                                         className="tab-pane"
                                                                         id="product-tab-vendor"
@@ -590,79 +435,7 @@ const DetailProduct = ({
                                                                                     />
                                                                                 </figure>
                                                                             </div>
-                                                                            {/* <div className="col-md-6 pl-2 pl-md-6 mb-4">
-                                <div className="vendor-user">
-                                  <figure className="vendor-logo mr-4">
-                                    <a href="#">
-                                      <img
-                                        src="assets/images/products/vendor-logo.jpg"
-                                        alt="Vendor Logo"
-                                        width={80}
-                                        height={80}
-                                      />
-                                    </a>
-                                  </figure>
-                                  <div>
-                                    <div className="vendor-name">
-                                      <a href="#">Jone Doe</a>
-                                    </div>
-                                    <div className="ratings-container">
-                                      <div className="ratings-full">
-                                        <span className="ratings" style={{ width: "90%" }} />
-                                        <span className="tooltiptext tooltip-top" />
-                                      </div>
-                                      <a href="#" className="rating-reviews">
-                                        (32 Reviews)
-                                      </a>
-                                    </div>
-                                  </div>
-                                </div>
-                                <ul className="vendor-info list-style-none">
-                                  <li className="store-name">
-                                    <label>Store Name:</label>
-                                    <span className="detail">OAIO Store</span>
-                                  </li>
-                                  <li className="store-address">
-                                    <label>Address:</label>
-                                    <span className="detail">
-                                      Steven Street, El Carjon, CA 92020, United States (US)
-                                    </span>
-                                  </li>
-                                  <li className="store-phone">
-                                    <label>Phone:</label>
-                                    <a href="#tel:">1234567890</a>
-                                  </li>
-                                </ul>
-                                <a
-                                  href="vendor-dokan-store.html"
-                                  className="btn btn-dark btn-link btn-underline btn-icon-right"
-                                >
-                                  Visit Store
-                                  <i className="w-icon-long-arrow-right" />
-                                </a>
-                              </div> */}
                                                                         </div>
-                                                                        {/* <p className="mb-5">
-                              <strong className="text-dark">L</strong>orem ipsum dolor sit
-                              amet, consectetur adipiscing elit, sed do eiusmod tempor
-                              incididunt ut labore et dolore magna aliqua. Venenatis tellus in
-                              metus vulputate eu scelerisque felis. Vel pretium lectus quam id
-                              leo in vitae turpis massa. Nunc id cursus metus aliquam. Libero
-                              id faucibus nisl tincidunt eget. Aliquam id diam maecenas
-                              ultricies mi eget mauris. Volutpat ac tincidunt vitae semper
-                              quis lectus. Vestibulum mattis ullamcorper velit sed. A arcu
-                              cursus vitae congue mauris.
-                            </p> */}
-                                                                        {/* <p className="mb-2">
-                              <strong className="text-dark">A</strong> arcu cursus vitae
-                              congue mauris. Sagittis id consectetur purus ut. Tellus rutrum
-                              tellus pellentesque eu tincidunt tortor aliquam nulla. Diam in
-                              arcu cursus euismod quis. Eget sit amet tellus cras adipiscing
-                              enim eu. In fermentum et sollicitudin ac orci phasellus. A
-                              condimentum vitae sapien pellentesque habitant morbi tristique
-                              senectus et. In dictum non consectetur a erat. Nunc scelerisque
-                              viverra mauris in aliquam sem fringilla.
-                            </p> */}
                                                                     </div>
                                                                     <div
                                                                         className="tab-pane"
@@ -2001,305 +1774,16 @@ const DetailProduct = ({
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {productData?.products.length >
+                                                {substitutionProducts?.length >
                                                     0 && (
                                                     <ProductCarousel
                                                         products={
-                                                            productData?.products
+                                                            substitutionProducts
                                                         }
                                                         sectionTitle="Produits de substitutions"
                                                     />
                                                 )}
-
-                                                {/* <section className="vendor-product-section">
-                        <div className="title-link-wrapper mb-4">
-                          <h4 className="title text-left">More Products From This Vendor</h4>
-                          <a
-                            href="#"
-                            className="btn btn-dark btn-link btn-slide-right btn-icon-right"
-                          >
-                            More Products
-                            <i className="w-icon-long-arrow-right" />
-                          </a>
-                        </div>
-                        <div
-                          className="swiper-container swiper-theme"
-                          data-swiper-options="{
-                                            'spaceBetween': 20,
-                                            'slidesPerView': 2,
-                                            'breakpoints': {
-                                                '576': {
-                                                    'slidesPerView': 3
-                                                },
-                                                '768': {
-                                                    'slidesPerView': 4
-                                                },
-                                                '992': {
-                                                    'slidesPerView': 3
-                                                }
-                                            }
-                                        }"
-                        >
-                          <div className="swiper-wrapper row cols-lg-3 cols-md-4 cols-sm-3 cols-2">
-                            <div className="swiper-slide product">
-                              <figure className="product-media">
-                                <a href="product-default.html">
-                                  <img
-                                    src="assets/images/products/default/1-1.jpg"
-                                    alt="Product"
-                                    width={300}
-                                    height={338}
-                                  />
-                                  <img
-                                    src="assets/images/products/default/1-2.jpg"
-                                    alt="Product"
-                                    width={300}
-                                    height={338}
-                                  />
-                                </a>
-                                <div className="product-action-vertical">
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-cart w-icon-cart"
-                                    title="Add to cart"
-                                  />
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-wishlist w-icon-heart"
-                                    title="Add to wishlist"
-                                  />
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-compare w-icon-compare"
-                                    title="Add to Compare"
-                                  />
-                                </div>
-                                <div className="product-action">
-                                  <a
-                                    href="#"
-                                    className="btn-product btn-quickview"
-                                    title="Quick View"
-                                  >
-                                    Quick View
-                                  </a>
-                                </div>
-                              </figure>
-                              <div className="product-details">
-                                <div className="product-cat">
-                                  <a href="shop-banner-sidebar.html">Accessories</a>
-                                </div>
-                                <h4 className="product-name">
-                                  <a href="product-default.html">Sticky Pencil</a>
-                                </h4>
-                                <div className="ratings-container">
-                                  <div className="ratings-full">
-                                    <span className="ratings" style={{ width: "100%" }} />
-                                    <span className="tooltiptext tooltip-top" />
-                                  </div>
-                                  <a href="product-default.html" className="rating-reviews">
-                                    (3 reviews)
-                                  </a>
-                                </div>
-                                <div className="product-pa-wrapper">
-                                  <div className="product-price">$20.00</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="swiper-slide product">
-                              <figure className="product-media">
-                                <a href="product-default.html">
-                                  <img
-                                    src="assets/images/products/default/2.jpg"
-                                    alt="Product"
-                                    width={300}
-                                    height={338}
-                                  />
-                                </a>
-                                <div className="product-action-vertical">
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-cart w-icon-cart"
-                                    title="Add to cart"
-                                  />
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-wishlist w-icon-heart"
-                                    title="Add to wishlist"
-                                  />
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-compare w-icon-compare"
-                                    title="Add to Compare"
-                                  />
-                                </div>
-                                <div className="product-action">
-                                  <a
-                                    href="#"
-                                    className="btn-product btn-quickview"
-                                    title="Quick View"
-                                  >
-                                    Quick View
-                                  </a>
-                                </div>
-                              </figure>
-                              <div className="product-details">
-                                <div className="product-cat">
-                                  <a href="shop-banner-sidebar.html">Electronics</a>
-                                </div>
-                                <h4 className="product-name">
-                                  <a href="product-default.html">
-                                    Mini Multi-Functional Cooker
-                                  </a>
-                                </h4>
-                                <div className="ratings-container">
-                                  <div className="ratings-full">
-                                    <span className="ratings" style={{ width: "80%" }} />
-                                    <span className="tooltiptext tooltip-top" />
-                                  </div>
-                                  <a href="product-default.html" className="rating-reviews">
-                                    (5 reviews)
-                                  </a>
-                                </div>
-                                <div className="product-pa-wrapper">
-                                  <div className="product-price">
-                                    <ins className="new-price">$480.00</ins>
-                                    <del className="old-price">$534.00</del>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="swiper-slide product">
-                              <figure className="product-media">
-                                <a href="product-default.html">
-                                  <img
-                                    src="assets/images/products/default/3.jpg"
-                                    alt="Product"
-                                    width={300}
-                                    height={338}
-                                  />
-                                </a>
-                                <div className="product-action-vertical">
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-cart w-icon-cart"
-                                    title="Add to cart"
-                                  />
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-wishlist w-icon-heart"
-                                    title="Add to wishlist"
-                                  />
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-compare w-icon-compare"
-                                    title="Add to Compare"
-                                  />
-                                </div>
-                                <div className="product-action">
-                                  <a
-                                    href="#"
-                                    className="btn-product btn-quickview"
-                                    title="Quick View"
-                                  >
-                                    Quick View
-                                  </a>
-                                </div>
-                              </figure>
-                              <div className="product-details">
-                                <div className="product-cat">
-                                  <a href="shop-banner-sidebar.html">Sports</a>
-                                </div>
-                                <h4 className="product-name">
-                                  <a href="product-default.html">Skate Pan</a>
-                                </h4>
-                                <div className="ratings-container">
-                                  <div className="ratings-full">
-                                    <span className="ratings" style={{ width: "100%" }} />
-                                    <span className="tooltiptext tooltip-top" />
-                                  </div>
-                                  <a href="product-default.html" className="rating-reviews">
-                                    (3 reviews)
-                                  </a>
-                                </div>
-                                <div className="product-pa-wrapper">
-                                  <div className="product-price">
-                                    <ins className="new-price">$278.00</ins>
-                                    <del className="old-price">$310.00</del>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="swiper-slide product">
-                              <figure className="product-media">
-                                <a href="product-default.html">
-                                  <img
-                                    src="assets/images/products/default/4-1.jpg"
-                                    alt="Product"
-                                    width={300}
-                                    height={338}
-                                  />
-                                  <img
-                                    src="assets/images/products/default/4-2.jpg"
-                                    alt="Product"
-                                    width={300}
-                                    height={338}
-                                  />
-                                </a>
-                                <div className="product-action-vertical">
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-cart w-icon-cart"
-                                    title="Add to cart"
-                                  />
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-wishlist w-icon-heart"
-                                    title="Add to wishlist"
-                                  />
-                                  <a
-                                    href="#"
-                                    className="btn-product-icon btn-compare w-icon-compare"
-                                    title="Add to Compare"
-                                  />
-                                </div>
-                                <div className="product-action">
-                                  <a
-                                    href="#"
-                                    className="btn-product btn-quickview"
-                                    title="Quick View"
-                                  >
-                                    Quick View
-                                  </a>
-                                </div>
-                              </figure>
-                              <div className="product-details">
-                                <div className="product-cat">
-                                  <a href="shop-banner-sidebar.html">Accessories</a>
-                                </div>
-                                <h4 className="product-name">
-                                  <a href="product-default.html">Clip Attachment</a>
-                                </h4>
-                                <div className="ratings-container">
-                                  <div className="ratings-full">
-                                    <span className="ratings" style={{ width: "100%" }} />
-                                    <span className="tooltiptext tooltip-top" />
-                                  </div>
-                                  <a href="product-default.html" className="rating-reviews">
-                                    (5 reviews)
-                                  </a>
-                                </div>
-                                <div className="product-pa-wrapper">
-                                  <div className="product-price">$40.00</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </section> */}
                                             </div>
-                                            {/* End of Main Content */}
-                                            {/* <ProductSideBar /> */}
-                                            {/* End of Sidebar */}
                                         </div>
                                     )}
                                 </>
@@ -2329,138 +1813,6 @@ const DetailProduct = ({
             </div>
             {/* End of Page Wrapper */}
             {/* Start of Sticky Footer */}
-            <div className="sticky-footer sticky-content fix-bottom²">
-                <a href="demo1.html" className="sticky-link active">
-                    <i className="w-icon-home" />
-                    <p>Home</p>
-                </a>
-                <a href="shop-banner-sidebar.html" className="sticky-link">
-                    <i className="w-icon-category" />
-                    <p>Shop</p>
-                </a>
-                <a href="my-account.html" className="sticky-link">
-                    <i className="w-icon-account" />
-                    <p>Account</p>
-                </a>
-                <div className="cart-dropdown dir-up">
-                    <a href="cart.html" className="sticky-link">
-                        <i className="w-icon-cart" />
-                        <p>Cart</p>
-                    </a>
-                    <div className="dropdown-box">
-                        <div className="products">
-                            <div className="product product-cart">
-                                <div className="product-detail">
-                                    <h3 className="product-name">
-                                        <a href="product-default.html">
-                                            Beige knitted elas
-                                            <br />
-                                            tic runner shoes
-                                        </a>
-                                    </h3>
-                                    <div className="price-box">
-                                        <span className="product-quantity">
-                                            1
-                                        </span>
-                                        <span className="product-price">
-                                            $25.68
-                                        </span>
-                                    </div>
-                                </div>
-                                <figure className="product-media">
-                                    <a href="#">
-                                        <img
-                                            src="assets/images/cart/product-1.jpg"
-                                            alt="product"
-                                            height={84}
-                                            width={94}
-                                        />
-                                    </a>
-                                </figure>
-                                <button
-                                    className="btn btn-link btn-close"
-                                    aria-label="button"
-                                >
-                                    <i className="fas fa-times" />
-                                </button>
-                            </div>
-                            <div className="product product-cart">
-                                <div className="product-detail">
-                                    <h3 className="product-name">
-                                        <a href="https://www.portotheme.com/html/wolmart/product.html">
-                                            Blue utility pina
-                                            <br />
-                                            fore denim dress
-                                        </a>
-                                    </h3>
-                                    <div className="price-box">
-                                        <span className="product-quantity">
-                                            1
-                                        </span>
-                                        <span className="product-price">
-                                            $32.99
-                                        </span>
-                                    </div>
-                                </div>
-                                <figure className="product-media">
-                                    <a href="#">
-                                        <img
-                                            src="assets/images/cart/product-2.jpg"
-                                            alt="product"
-                                            width={84}
-                                            height={94}
-                                        />
-                                    </a>
-                                </figure>
-                                <button
-                                    className="btn btn-link btn-close"
-                                    aria-label="button"
-                                >
-                                    <i className="fas fa-times" />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="cart-total">
-                            <label>Subtotal:</label>
-                            <span className="price">$58.67</span>
-                        </div>
-                        <div className="cart-action">
-                            <a
-                                href="cart.html"
-                                className="btn btn-dark btn-outline btn-rounded"
-                            >
-                                View Cart
-                            </a>
-                            <a
-                                href="checkout.html"
-                                className="btn btn-primary  btn-rounded"
-                            >
-                                Checkout
-                            </a>
-                        </div>
-                    </div>
-                    {/* End of Dropdown Box */}
-                </div>
-                <div className="header-search hs-toggle dir-up">
-                    <a href="#" className="search-toggle sticky-link">
-                        <i className="w-icon-search" />
-                        <p>Search</p>
-                    </a>
-                    <form action="#" className="input-wrapper">
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="search"
-                            autoComplete="off"
-                            placeholder="Search"
-                            required=""
-                        />
-                        <button className="btn btn-search" type="submit">
-                            <i className="w-icon-search" />
-                        </button>
-                    </form>
-                </div>
-            </div>
             {/* Start of Scroll Top */}
             <a
                 id="scroll-top"

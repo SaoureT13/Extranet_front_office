@@ -47,8 +47,9 @@ const ProductGallery = ({
                                             src={
                                                 image.src &&
                                                 image.src !== "" &&
-                                                image.src != null 
-                                                    ? fullUrl + image.src : fullUrl + defaultImage
+                                                image.src != null
+                                                    ? fullUrl + image.src
+                                                    : fullUrl + defaultImage
                                             }
                                             alt={
                                                 image.alt || "Image du produit"
@@ -94,7 +95,7 @@ const ProductGallery = ({
                                         image.src &&
                                         image.src !== "" &&
                                         image.src != null &&
-                                        getImageName(image.src) != ""
+                                        getImageName(image.src) !== ""
                                             ? fullUrl + image.src
                                             : fullUrl + defaultImage
                                     }
@@ -109,5 +110,6 @@ const ProductGallery = ({
         </div>
     );
 };
+
 
 export default ProductGallery;

@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
 import "./Wizard.css"; // Add custom CSS for styling
-import { convertToFormData, crudData } from "../../services/apiService";
+import {
+    adminEmail,
+    convertToFormData,
+    crudData,
+} from "../../services/apiService";
 import { ToastContainer, toast } from "react-toastify";
 import FileUploader from "../../Mescomposants/FileUploader/FileUploader";
 import { useNavigate } from "react-router-dom";
 
 const WizardForm = () => {
+    const mode = JSON.parse(localStorage.getItem("appMode"));
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [countries, setCountries] = useState([]);
     const [formData, setFormData] = useState({
         STR_CNI: "",
         STR_DFE: "",
@@ -17,60 +23,66 @@ const WizardForm = () => {
         STR_PLANLOCALISATION: "",
         STR_AIRSI: "",
 
-        // STR_CNI: "",
-        // STR_DFE: "",
-        // STR_RCCM: "",
-        // STR_PLANLOCALISATION: "",
-        // STR_AIRSI: "",
         documents: [],
         mode: "registerClient",
 
         LG_PROID: 3,
-        LG_LSTPAYID: "0000000000000000000000000000000000000555",
+        LG_LSTPAYID: "",
         LG_LSTTYPESOCID: "",
-        STR_SOCDESCRIPTION: "defaultDescription",
-        STR_SOCMAIL: "default@mail.com",
-        STR_SOCPHONE: "0000000000",
-        STR_SOCSIRET: "dlkmlk",
-        STR_SOCNAME: "dlkmlk",
-        STR_SOCCODE: "dlkmlk",
+        STR_SOCDESCRIPTION: "",
+        STR_SOCMAIL: "",
+        STR_SOCPHONE: "",
+        STR_SOCSIRET: "",
+        STR_SOCNAME: "",
+        STR_SOCCODE: "",
 
-        STR_UTIPASSWORD: "defaultPassword",
-        STR_UTILOGIN: "defaultLogin",
-        STR_UTIMAIL: "defaultUser@mail.com",
-        STR_UTIPHONE: "0000000000",
-        STR_UTIFIRSTLASTNAME: "defaultFirstLastName",
-
-        // STR_UTIPASSWORD: "",
-        // STR_UTILOGIN: "",
-        // STR_UTIMAIL: "",
-        // STR_UTIPHONE: "",
-        // STR_UTIFIRSTLASTNAME: "",
+        STR_UTIPASSWORD: "",
+        STR_UTILOGIN: "",
+        STR_UTIMAIL: "",
+        STR_UTIPHONE: "",
+        STR_UTIFIRSTLASTNAME: "",
     });
 
     useEffect(() => {
         let isRequestSent = false;
 
-        if (!isRequestSent) {
-            const payload = {
-                mode: "sendEmail",
-                LG_LSTID: "MSG_ACCOUNT_CREATION",
-            };
-            try {
-                crudData(payload, "ConfigurationManager.php").then(
-                    (response) => {
-                        const { desc_statut, code_statut } = response.data;
-                        if (code_statut !== "0") {
-                            console.log("error");
+        if (success === true) {
+            if (!isRequestSent) {
+                const payload = {
+                    mode: "sendEmail",
+                    LG_LSTID: "MSG_ACCOUNT_CREATION",
+                    TO: adminEmail,
+                };
+                try {
+                    crudData(payload, "ConfigurationManager.php").then(
+                        (response) => {
+                            const { desc_statut, code_statut } = response.data;
+                            if (code_statut !== "0") {
+                                console.log("error");
+                            }
+                            isRequestSent = true;
                         }
-                        isRequestSent = true;
-                    }
-                );
-            } catch (error) {
-                console.error(error);
+                    );
+                } catch (error) {
+                    console.error(error);
+                }
             }
         }
     }, [success]);
+
+    useEffect(() => {
+        const params = {
+            mode: mode.listElementsMode,
+            LG_TYLID: "3",
+        };
+        crudData(params, "ConfigurationManager.php")
+            .then((response) => {
+                setCountries(response.data.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+            });
+    }, []);
 
     const validateStep = () => {
         switch (currentStep) {
@@ -79,7 +91,7 @@ const WizardForm = () => {
             case 2:
                 return (
                     formData.STR_SOCSIRET !== "" &&
-                    formData.STR_SOCMAIL !== "" &&
+                    formData.STR_SOCNAME !== "" &&
                     formData.STR_SOCCODE !== ""
                 ); // Add more validations as needed
             case 3:
@@ -160,6 +172,7 @@ const WizardForm = () => {
     };
 
     const nextStep = () => {
+        console.log(formData);
         if (validateStep()) {
             setCurrentStep(currentStep + 1);
         } else {
@@ -201,6 +214,7 @@ const WizardForm = () => {
                     <AccountStep
                         formData={formData}
                         setFormData={setFormData}
+                        countries={countries}
                     />
                 );
             case 4:
@@ -213,7 +227,11 @@ const WizardForm = () => {
                 );
             case 6:
                 return (
-                    <Summary formData={formData} setFormData={setFormData} />
+                    <Summary
+                        formData={formData}
+                        setFormData={setFormData}
+                        countries={countries}
+                    />
                 );
             default:
                 return <Finish formData={formData} setFormData={setFormData} />;
@@ -597,7 +615,7 @@ const AddressStep = ({ formData, setFormData }) => {
     );
 };
 
-const AccountStep = ({ formData, setFormData }) => {
+const AccountStep = ({ formData, setFormData, countries }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -619,7 +637,7 @@ const AccountStep = ({ formData, setFormData }) => {
                                                 <label>
                                                     Ville de Facturation *
                                                 </label>
-                                                <input
+                                                {/* <input
                                                     type="text"
                                                     className="form-control form-control-md"
                                                     name="LG_LSTPAYID"
@@ -628,9 +646,37 @@ const AccountStep = ({ formData, setFormData }) => {
                                                             "LG_LSTPAYID"
                                                         ] || ""
                                                     }
+                                                    o
+                                                    required
+                                                /> */}
+                                                <select
+                                                    name="LG_LSTPAYID"
+                                                    className="form-control form-control-md"
+                                                    value={
+                                                        formData[
+                                                            "LG_LSTPAYID"
+                                                        ] || ""
+                                                    }
                                                     onChange={handleChange}
                                                     required
-                                                />
+                                                >
+                                                    {countries.map(
+                                                        (country) => (
+                                                            <option
+                                                                key={
+                                                                    country.LG_LSTID
+                                                                }
+                                                                value={
+                                                                    country.LG_LSTID
+                                                                }
+                                                            >
+                                                                {
+                                                                    country.STR_LSTDESCRIPTION
+                                                                }
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </select>
                                             </div>
                                         </div>
                                         {/* <div className="col-md-6">
@@ -782,7 +828,7 @@ const UserStep = ({ formData, setFormData }) => {
                                                     Email utilisateur *
                                                 </label>
                                                 <input
-                                                    type="text"
+                                                    type="email"
                                                     className="form-control form-control-md"
                                                     name="STR_UTIMAIL"
                                                     value={
@@ -799,7 +845,7 @@ const UserStep = ({ formData, setFormData }) => {
                                             <div className="form-group">
                                                 <label>Mot de passe *</label>
                                                 <input
-                                                    type="text"
+                                                    type="password"
                                                     className="form-control form-control-md"
                                                     name="STR_UTIPASSWORD"
                                                     value={
@@ -1022,7 +1068,7 @@ const SocialStep = ({ formData, setFormData }) => {
     );
 };
 
-const Summary = ({ formData }) => (
+const Summary = ({ formData, countries }) => (
     <div className="container  mb-5">
         <div className="row p-5">
             <div className="col-lg-12 pr-lg-4 mb-4">
@@ -1061,7 +1107,14 @@ const Summary = ({ formData }) => (
                             </li>
                             <li>
                                 <strong>Ville de Facturation:</strong>{" "}
-                                {formData["ville-facturation"]}
+                                {/* {formData["ville-facturation"]} */}
+                                {
+                                    countries.find(
+                                        (item) =>
+                                            item.LG_LSTID ===
+                                            formData.LG_LSTPAYID
+                                    )?.STR_LSTDESCRIPTION
+                                }
                             </li>
                             <li>
                                 <strong>Adresse E-mail:</strong>{" "}

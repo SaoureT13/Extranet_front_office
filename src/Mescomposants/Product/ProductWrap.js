@@ -3,13 +3,9 @@ import { NavLink } from "react-router-dom";
 import { crudData, defaultImage, fullUrl } from "../../services/apiService"; // Importation de la fonction crudData
 import { toast } from "react-toastify";
 import { formatPrice } from "../../MesPages/Panier/Cart";
+import { verifyImageLink } from "../../services/lib";
 
-const ProductWrap = ({
-    product,
-    userData = {},
-    col_css,
-    onSuccess,
-}) => {
+const ProductWrap = ({ product, userData = {}, col_css, onSuccess }) => {
     // Vérifier si les données utilisateur sont présentes dans localStorage
     // const userData = JSON.parse(localStorage.getItem('userData'));
     const mode = JSON.parse(localStorage.getItem("appMode"));
@@ -97,7 +93,10 @@ const ProductWrap = ({
     return (
         <>
             <div className={` ${col_css}`}>
-                <div className="product-wrap product-wrap-max-w">
+                <div
+                    className="product-wrap product-wrap-max-w flex-shrink-0"
+                    style={{ width: "255px" }}
+                >
                     <div className="product text-center">
                         <figure className="product-media">
                             <NavLink
@@ -110,12 +109,17 @@ const ProductWrap = ({
                                     //     ? defaultImage
                                     //     : urlBaseImage + product.ArtGPicID
                                     // }
+                                    // src={`${fullUrl + defaultImage}`}
                                     src={`${
                                         product.ArtGPicID
-                                            ? fullUrl + product.ArtGPicID
+                                            ? verifyImageLink(
+                                                  fullUrl + product.ArtGPicID
+                                              ) !== false
+                                                ? fullUrl + product.ArtGPicID
+                                                : fullUrl + defaultImage
                                             : fullUrl + defaultImage
                                     }`}
-                                    alt={product.ArtGPicID}
+                                    alt={product.ArtLib}
                                     width={300}
                                     height={338}
                                 />

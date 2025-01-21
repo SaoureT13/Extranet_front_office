@@ -9,6 +9,7 @@
 
 .bgUserConnected {
     background-color: #bad3fb !important;
+    /* background-color: #edf2fa; */
 }
 
 .bgUserDisConnected {
@@ -36,7 +37,7 @@
 }
 
 .product-details {
-    background-color: #edf1fa !important;
+    background-color: #edf2fa !important;
     padding: 5px !important;
 }
 
@@ -250,4 +251,24 @@
     padding: 0.4em;
     border-radius: 99%;
     background: transparent;
+}
+
+.responsive-encours {
+    max-width: 600px;
+}
+
+@media screen and (max-width: 1070px) {
+    .responsive-encours {
+        order: 9;
+        flex: "1 0 100%";
+        margin-top: 20px;
+        max-width: none;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .absolute-btn {
+        position: absolute;
+        right: 0;
+    }
 }

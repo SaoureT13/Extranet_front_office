@@ -23,6 +23,8 @@ import Footer from "./Mescomposants/Footer.js";
 import DeliverySchedule from "./MesPages/dashboard/DeliverySchedule.js";
 import { ToastContainer } from "react-toastify";
 import Commandes from "./MesPages/Commandes/Commandes.js";
+import InvoicePDF from "./Mescomposants/exportPDF/InvoicePDF.js";
+import Invoices from "./MesPages/Invoices/Invoices.js";
 
 function App() {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -33,7 +35,7 @@ function App() {
     const urlBaseImage = localStorage.getItem("urlBaseImage");
 
     const defaultImage = JSON.parse(localStorage.getItem("defaultImage"));
-    console.log("defaultImage", defaultImage);
+
     const imageRuptureStock = localStorage.getItem("imageRuptureStock");
 
     const params = {
@@ -101,7 +103,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/shop"
+                        path="/shop/:params?"
                         element={
                             <Shop param={params} defaultImage={defaultImage} />
                         }
@@ -125,6 +127,8 @@ function App() {
                         element={<DeliverySchedule param={params} />}
                     />
                     <Route path="/mes-commandes" element={<Commandes />} />
+                    <Route path="/factures" element={<Invoices />} />
+                    <Route path="/pdf-tst" element={<InvoicePDF />} />
                     {/* Redirection vers la page d'accueil */}
                 </Routes>
                 <Footer param={params} />

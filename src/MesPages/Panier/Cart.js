@@ -45,8 +45,7 @@ const Cart = ({ onSuccess, param = {} }) => {
 
     const handleCsvData = (data) => {
         setCsvData(data);
-    }
-
+    };
 
     //   useEffect(() => {
     //     const user = JSON.parse(localStorage.getItem('userData'));
@@ -417,11 +416,12 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                             </td>
                                                                             <td className="product-price">
                                                                                 <span className="amount">
-                                                                                    {formatPrice(
-                                                                                        parseInt(
-                                                                                            product.PlvPUNet
-                                                                                        )
-                                                                                    )}{" "}
+                                                                                    {product &&
+                                                                                        formatPrice(
+                                                                                            parseInt(
+                                                                                                product.PlvPUNet
+                                                                                            )
+                                                                                        )}{" "}
                                                                                     FCFA
                                                                                 </span>
                                                                             </td>
@@ -523,14 +523,15 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                             </td>
                                                                             <td className="product-subtotal">
                                                                                 <span className="amount">
-                                                                                    {formatPrice(
-                                                                                        parseInt(
-                                                                                            product.PlvQteUV
-                                                                                        ) *
+                                                                                    {product &&
+                                                                                        formatPrice(
                                                                                             parseInt(
-                                                                                                product.PlvPUNet
-                                                                                            )
-                                                                                    )}{" "}
+                                                                                                product.PlvQteUV
+                                                                                            ) *
+                                                                                                parseInt(
+                                                                                                    product.PlvPUNet
+                                                                                                )
+                                                                                        )}{" "}
                                                                                     FCFA
                                                                                 </span>
                                                                             </td>
@@ -630,9 +631,10 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                     Montant HT
                                                                 </label>
                                                                 <span>
-                                                                    {formatPrice(
-                                                                        cart?.dbl_commmtht
-                                                                    )}{" "}
+                                                                    {cart &&
+                                                                        formatPrice(
+                                                                            cart?.dbl_commmtht
+                                                                        )}{" "}
                                                                     FCFA
                                                                 </span>
                                                             </div>
@@ -645,9 +647,10 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                     Total
                                                                 </label>
                                                                 <span className="ls-50">
-                                                                    {formatPrice(
-                                                                        cart?.dbl_commmtttc
-                                                                    )}{" "}
+                                                                    {cart &&
+                                                                        formatPrice(
+                                                                            cart?.dbl_commmtttc
+                                                                        )}{" "}
                                                                     FCFA
                                                                 </span>
                                                             </div>
@@ -683,7 +686,16 @@ const Cart = ({ onSuccess, param = {} }) => {
                                         lineHeight: 1,
                                     }}
                                 >
-                                    <CSVUploader onHandlePanierData={setCart} fetchData={fetchData} onHandleProductData={setProductData} fetchPanierData={fetchPanierData} data={csvData} onHandlesetData={handleCsvData} params={param} onHandleSuccess={onSuccess} />
+                                    <CSVUploader
+                                        onHandlePanierData={setCart}
+                                        fetchData={fetchData}
+                                        onHandleProductData={setProductData}
+                                        fetchPanierData={fetchPanierData}
+                                        data={csvData}
+                                        onHandlesetData={handleCsvData}
+                                        params={param}
+                                        onHandleSuccess={onSuccess}
+                                    />
                                 </div>
                             </div>
                         </div>

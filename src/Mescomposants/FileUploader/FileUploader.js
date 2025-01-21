@@ -74,7 +74,10 @@ function FileUploader({
                                     </small>{" "}
                                     |{" "}
                                     <small style={{ fontSize: ".8em" }}>
-                                        {(fileSize / (1024 * 1024)).toFixed(2)}{" "}
+                                        {(
+                                            parseFloat(fileSize) /
+                                            (1024 * 1024)
+                                        ).toFixed(2)}{" "}
                                         MB
                                     </small>
                                 </div>

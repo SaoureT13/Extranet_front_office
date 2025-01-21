@@ -2,9 +2,6 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const MainNav = ({ param, megaMenu }) => {
-    console.log("hxfgsdjwhxfgsjdwf");
-    console.log(param);
-
     const menuItems = [
         {
             label: "ACCUEIL",
@@ -48,10 +45,10 @@ const MainNav = ({ param, megaMenu }) => {
                 },
             ],
         },
-        {
-            label: "SOCIÉTÉ",
-            href: "/societe",
-        },
+        // {
+        //     label: "SOCIÉTÉ",
+        //     href: "/societe",
+        // },
         {
             label: "SERVICES",
             href: "/services",
@@ -72,19 +69,15 @@ const MainNav = ({ param, megaMenu }) => {
                               href: "/livraison",
                           },
                           {
-                              label: "Mes en cours",
-                              href: "vendor-wcfm-store-list.html",
-                          },
-                          {
                               label: "Mes commandes",
                               href: "/mes-commandes",
                           },
                           {
                               label: "Mes factures",
-                              href: "",
+                              href: "/factures",
                           },
                           {
-                              label: "Administration",
+                              label: "Mes règlements",
                               href: "vendor-wc-store-list.html",
                           },
                       ],

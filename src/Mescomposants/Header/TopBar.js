@@ -14,6 +14,8 @@ import { Modal, Button, Dropdown } from "react-bootstrap";
 import { doConnexion, doDisConnexion } from "../../services/apiService";
 import EncoursComponent from "../Encours/EncoursComponent";
 import "./login.css"; // Add your custom styles here
+import MobileMenu from "../MobileMenu";
+import axios from "axios";
 
 const TopBar = ({ param, onComplete, triggerRequest }) => {
     const { theme, toggleTheme } = useTheme();
@@ -123,15 +125,21 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
         crudData(params, url)
             .then((response) => {
                 if (response && response.status === 200) {
-                    const filters = response.data || [];
+                    const filters = response.data.data || [];
                     localStorage.setItem("filters", JSON.stringify(filters));
                     const newMegaMenu = [];
                     Object.keys(filters).forEach((item) => {
                         const items = [];
                         filters[item].forEach((element) => {
-                            items.push({ label: element, href: "/shop" });
+                            items.push({
+                                label: element,
+                                href: `/shop?${item}=${element}`,
+                            });
                         });
-                        newMegaMenu.push({ title: item.toUpperCase(), items: items });
+                        newMegaMenu.push({
+                            title: item.toUpperCase(),
+                            items: items,
+                        });
                     });
                     setFilters(newMegaMenu);
                 } else {
@@ -234,7 +242,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                     window.location.replace("/");
                     console.log("userData supprimé du localStorage");
                 }
-                
+
                 // Actualise la page
             } else {
                 setError(userData.desc_statut);
@@ -256,7 +264,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                 }`}
             >
                 <div className="header-middle">
-                    <div className="container">
+                    <div className="container" style={{ flexWrap: "wrap" }}>
                         <div className="header-left mr-md-4">
                             <a
                                 href="#"
@@ -271,15 +279,12 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                                     height={45}
                                 />
                             </a>
-                            {param.userData ? (
-                                <EncoursComponent
-                                    totalAmount={totalAmount}
-                                    clisolde={clisolde}
-                                />
-                            ) : (
-                                <></>
-                            )}
                         </div>
+                        {param.userData ? (
+                            <EncoursComponent totalAmount={totalAmount} />
+                        ) : (
+                            <></>
+                        )}
                         <div className="header-right ml-4">
                             {param.userData ? (
                                 <>
@@ -366,16 +371,16 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                     {/* <Modal.Header closeButton>
           </Modal.Header> */}
                     <Modal.Body>
-                        <div className="row justify-content-center">
+                        <div className="row justify-content-center flex-wrap">
                             <div className="login-container">
                                 <div className="login-left">
-                                    <h1>
+                                    <h1 className="">
                                         <span className="highlight">
                                             Hello !
                                         </span>{" "}
                                         nous sommes heureux de vous revoir
                                     </h1>
-                                    <p>
+                                    <p className="text-center">
                                         Pour vous connecter renseignez votre
                                         identifiant
                                     </p>
@@ -457,7 +462,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                                         </div>
                                         <button
                                             type="submit"
-                                            className="btn-submit"
+                                            className="btn btn-submit"
                                         >
                                             S'identifier
                                         </button>
@@ -469,14 +474,16 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                                         </NavLink>
                                     </p>
                                 </div>
-                                <div className="login-right">
+                                <div className="login-right d-none d-md-block">
                                     <div className="company-info">
                                         <img
                                             src="path_to_logo"
                                             alt="SN Proveci Logo"
                                             className="company-logo"
                                         />
-                                        <h2>GROSSISTE VÉTÉRINAIRE</h2>
+                                        <h2 className="highlight">
+                                            GROSSISTE VÉTÉRINAIRE
+                                        </h2>
                                         <p>
                                             En tant que client bénéficiez d'un
                                             accompagnement personnalisé,
@@ -487,7 +494,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                                     <div className="animal-icons">
                                         {/* Add your animal icons here */}
                                         <img
-                                            src="assets/images/image_footer.png"
+                                            src="assets/images/icone.png"
                                             alt="Icon"
                                         />
                                     </div>
@@ -498,6 +505,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                 </Modal>
                 {/* <DesktopMenu /> */}
                 <MainNav param={param} megaMenu={filters} />
+                <MobileMenu megaMenu={filters} />
             </header>
         </>
     );

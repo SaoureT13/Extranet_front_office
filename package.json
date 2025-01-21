@@ -7,8 +7,10 @@
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@react-pdf/renderer": "^4.1.6",
     "@splidejs/react-splide": "^0.7.12",
     "@splidejs/splide": "^4.1.4",
+    "@tanstack/react-query": "^5.62.10",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -22,6 +24,7 @@
     "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.2",
     "jspdf": "^2.5.1",
+    "n2words": "^1.21.0",
     "react": "^18.3.1",
     "react-apple-signin-auth": "^1.1.0",
     "react-bootstrap": "^2.10.3",
@@ -43,7 +46,8 @@
     "sweetalert2": "^11.12.1",
     "sweetalert2-react-content": "^5.0.7",
     "swiper": "^11.1.14",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

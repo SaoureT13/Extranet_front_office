@@ -12,7 +12,7 @@ const AppMenu = () => {
   
   return (
     <nav className="breadcrumb-nav container">
-            <Breadcrumb items={breadcrumbItems} />
+            {/* <Breadcrumb items={breadcrumbItems} /> */}
             
 
       {/* <ul className="product-nav list-style-none">

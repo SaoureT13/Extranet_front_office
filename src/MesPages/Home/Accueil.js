@@ -38,24 +38,10 @@ const Accueil = ({ param, defaultImage, onSuccess }) => {
     const [statusCode, setStatusCode] = useState(null); // Code statut HTTP
     const [isLoading, setIsLoading] = useState(false);
 
-    const [addedProducts, setAddedProducts] = useState([]);
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [popupContent, setPopupContent] = useState({});
-    const [products, setProducts] = useState([]);
+    const [lastestProducts, setLatestProducts] = useState([]);
+    const [products, setProducts] = useState({});
 
-    // Fonction pour récupérer les données depuis l'API
-    // const fetchData = (params, apiEndpointe) => {
-    //   crudData(params, apiEndpointe)
-    //     .then(response => {
-    //       const products = response.data.products;
-    //       setProductData(products[0]); // Assuming the first product is the one we want
-    //     })
-    //     .catch(error => {
-    //       console.error('Erreur lors de la récupération des données:', error);
-    //     });
-    // };
-
-    const fetchData = (params, url) => {
+    const fetchData = (params, url, setter) => {
         setIsLoading(true); // Activez le statut de chargement avant la requête
         crudData(params, url)
             .then((response) => {
@@ -88,14 +74,14 @@ const Accueil = ({ param, defaultImage, onSuccess }) => {
             });
     };
 
-    const fetchProductsData = (params, url) => {
+    const fetchProductsData = (params, url, setter) => {
         setIsLoading(true); // Activez le statut de chargement avant la requête
         crudData(params, url)
             .then((response) => {
                 setIsLoading(false); // Désactivez le statut de chargement une fois la réponse reçue
                 if (response && response.status === 200) {
-                    const produitVeto = response.data.products;
-                    setProducts(produitVeto);
+                    const produitVeto = response.data.data;
+                    setter(produitVeto);
                     setStatusCode(response?.status);
                 } else {
                     console.error("Erreur HTTP:", response);
@@ -120,13 +106,27 @@ const Accueil = ({ param, defaultImage, onSuccess }) => {
                 }
             });
     };
-    
+
     useEffect(() => {
-        const params = {
-            mode: mode.listProductMode,
-            LG_PROID: localStorage.getItem("selectedProductId"), // ID du produit à récupérer
+        let params = {
+            mode: mode.listLastestItemsMode,
+            LIMIT: "25",
+            PAGE: "1", // ID du produit à récupérer
         };
-        fetchProductsData(params, apiEndpointe.StockManagerEndPoint);
+        fetchProductsData(
+            params,
+            apiEndpointe.StockManagerEndPoint,
+            setLatestProducts
+        );
+
+        params = {
+            mode: mode.getProductByCategoryMode,
+        };
+        fetchProductsData(
+            params,
+            apiEndpointe.StockManagerEndPoint,
+            setProducts
+        );
     }, []);
 
     useEffect(() => {
@@ -150,50 +150,6 @@ const Accueil = ({ param, defaultImage, onSuccess }) => {
             // fetchData(params, apiEndpointe.StockManagerEndPoint);
         }
     }, [navigate]);
-   
-
-    // if (!productData) {
-    //   return <div>Chargement...</div>; // Affichage pendant le chargement
-    // }
-
-    // "ArtID": "1025",
-    //           "ArtCode": "ABI101.",
-    //           "ArtLib": "TRISULMYCINE 100 G",
-    //           "ArtPrixBase": "2600.00",
-    //           "ArtCodeBarre": "",
-    //           "ArtVolume": "",
-    //           "ArtGPicID": "-1",
-    //           "ArtStk": "189.00",
-    //           "ArtGTaxID": "-1",
-    //           "ArtLongueur": "0",
-    //           "ArtLargeur": "0",
-    //           "ArtHauteur": "0",
-    //           "ArtPoids": "",
-    //           "ArtIsSleep": "-",
-    //           "CmtTxt": "",
-    //           "ArtLastPA": "2005.32",
-    //           "ArtCategEnu": "ANTIBIOTIQUES",
-    //           "ArtFamilleEnu": "ABI2",
-    //           "ArtGammeEnu": "LAPROVET",
-    //           "ARTFREE0": "701100",
-    //           "ARTFREE1": "",
-    //           "ARTFREE2": "AVIAIRE",
-    //           "ARTFREE3": "LAPROVET",
-    //           "ARTFREE4": "Standard",
-    //           "ARTFREE5": "SACHET"
-
-    // Fonction pour gérer l'incrémentation
-    const handleIncrement = () => {
-        setQuantity((prevQuantity) => prevQuantity + 1);
-    };
-
-    // Fonction pour gérer la décrémentation
-    const handleDecrement = () => {
-        setQuantity((prevQuantity) =>
-            prevQuantity > 1 ? prevQuantity - 1 : 1
-        );
-    };
-    console.log(param);
 
     return (
         <>
@@ -213,161 +169,37 @@ const Accueil = ({ param, defaultImage, onSuccess }) => {
 
                         <div className="container mt-5">
                             <ProductCarousel
-                                products={products}
-                                sectionTitle="Nos produits"
+                                products={lastestProducts}
+                                sectionTitle="Nouveautés"
                                 imagelBaseUrl={param.urlBaseImage}
                             />
+
                             <SpecialPromoSlider ImagelBaseUrl={urlBaseImage} />
 
-                            <NewProduct
+                            {products &&
+                                Object.keys(products).length > 0 &&
+                                Object.keys(products).map((key) => (
+                                    <ProductCarousel
+                                        key={key}
+                                        products={products[key]}
+                                        sectionTitle={key}
+                                        imagelBaseUrl={param.urlBaseImage}
+                                    />
+                                ))}
+                            {/* <NewProduct
                                 products={products}
                                 defaultImage={defaultImage}
                                 param={param}
                                 onSuccess={onSuccess}
-                            />
+                            /> */}
                         </div>
                     </div>
 
                     {/* End of Page Content */}
                 </main>
-                {/* End of Main */}
-                {/* Start of Footer */}
-                {/* End of Footer */}
             </div>
             {/* End of Page Wrapper */}
             {/* Start of Sticky Footer */}
-            <div className="sticky-footer sticky-content fix-bottom">
-                <a href="demo1.html" className="sticky-link active">
-                    <i className="w-icon-home" />
-                    <p>Home</p>
-                </a>
-                <a href="shop-banner-sidebar.html" className="sticky-link">
-                    <i className="w-icon-category" />
-                    <p>Shop</p>
-                </a>
-                <a href="my-account.html" className="sticky-link">
-                    <i className="w-icon-account" />
-                    <p>Account</p>
-                </a>
-                <div className="cart-dropdown dir-up">
-                    <a href="cart.html" className="sticky-link">
-                        <i className="w-icon-cart" />
-                        <p>Cart</p>
-                    </a>
-                    <div className="dropdown-box">
-                        <div className="products">
-                            <div className="product product-cart">
-                                <div className="product-detail">
-                                    <h3 className="product-name">
-                                        <a href="product-default.html">
-                                            Beige knitted elas
-                                            <br />
-                                            tic runner shoes
-                                        </a>
-                                    </h3>
-                                    <div className="price-box">
-                                        <span className="product-quantity">
-                                            1
-                                        </span>
-                                        <span className="product-price">
-                                            $25.68
-                                        </span>
-                                    </div>
-                                </div>
-                                <figure className="product-media">
-                                    <a href="#">
-                                        <img
-                                            src="assets/images/cart/product-1.jpg"
-                                            alt="product"
-                                            height={84}
-                                            width={94}
-                                        />
-                                    </a>
-                                </figure>
-                                <button
-                                    className="btn btn-link btn-close"
-                                    aria-label="button"
-                                >
-                                    <i className="fas fa-times" />
-                                </button>
-                            </div>
-                            <div className="product product-cart">
-                                <div className="product-detail">
-                                    <h3 className="product-name">
-                                        <a href="https://www.portotheme.com/html/wolmart/product.html">
-                                            Blue utility pina
-                                            <br />
-                                            fore denim dress
-                                        </a>
-                                    </h3>
-                                    <div className="price-box">
-                                        <span className="product-quantity">
-                                            1
-                                        </span>
-                                        <span className="product-price">
-                                            $32.99
-                                        </span>
-                                    </div>
-                                </div>
-                                <figure className="product-media">
-                                    <a href="#">
-                                        <img
-                                            src="assets/images/cart/product-2.jpg"
-                                            alt="product"
-                                            width={84}
-                                            height={94}
-                                        />
-                                    </a>
-                                </figure>
-                                <button
-                                    className="btn btn-link btn-close"
-                                    aria-label="button"
-                                >
-                                    <i className="fas fa-times" />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="cart-total">
-                            <label>Subtotal:</label>
-                            <span className="price">$58.67</span>
-                        </div>
-                        <div className="cart-action">
-                            <a
-                                href="cart.html"
-                                className="btn btn-dark btn-outline btn-rounded"
-                            >
-                                View Cart
-                            </a>
-                            <a
-                                href="checkout.html"
-                                className="btn btn-primary  btn-rounded"
-                            >
-                                Checkout
-                            </a>
-                        </div>
-                    </div>
-                    {/* End of Dropdown Box */}
-                </div>
-                <div className="header-search hs-toggle dir-up">
-                    <a href="#" className="search-toggle sticky-link">
-                        <i className="w-icon-search" />
-                        <p>Search</p>
-                    </a>
-                    <form action="#" className="input-wrapper">
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="search"
-                            autoComplete="off"
-                            placeholder="Search"
-                            required=""
-                        />
-                        <button className="btn btn-search" type="submit">
-                            <i className="w-icon-search" />
-                        </button>
-                    </form>
-                </div>
-            </div>
             {/* Start of Scroll Top */}
             <a
                 id="scroll-top"

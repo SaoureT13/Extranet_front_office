@@ -206,12 +206,6 @@ $.extend($.easing, {
                         }
                         this.isWrap ? e || this.unwrap() : e && this.wrap(), (Wolmart.sticky_top_height = 0), t && setTimeout(this.refreshSize.bind(this), 50);
                     }),
-                    (e.prototype.wrap = function () {
-                        this.$el.wrap('<div class="sticky-content-wrapper"></div>'), (this.isWrap = !0);
-                    }),
-                    (e.prototype.unwrap = function () {
-                        this.$el.unwrap(".sticky-content-wrapper"), (this.isWrap = !1);
-                    }),
                     (e.prototype.refresh = function (t, e) {
                         var i = window.pageYOffset + e.offsetTop,
                             a = this.$el;
