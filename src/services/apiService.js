@@ -151,7 +151,7 @@ const date = {
 
 export const adminEmail = "saoured11@gmail.com";
 
-const mode = {
+export const mode = {
     listProductMode: "listProduct",
     getProductMode: "getProduct",
     createCommproduittMode: "createCommproduit",
@@ -179,9 +179,11 @@ const mode = {
     listCategorieplaceEvenementMode: "listCategorieplaceEvenement",
     getProductListGammeAndCategoryMode: "getProductListGammeAndCategory",
     markProductAsViewedMode: "markProductAsViewed",
+
+    getCalendarFrontOfiiceMode: "getCalendarFrontOfiice",
 };
 
-const paths = {
+export const paths = {
     signIn: "/",
     saveEvent: "/save-event",
     eventDetails: "/event-details",
@@ -202,13 +204,13 @@ const paths = {
     notFound: "*",
 };
 
-const apiEndpointe = {
+export const apiEndpointe = {
     StockManagerEndPoint: "StockManager.php",
     CommandeManagerEndPoint: "CommandeManager.php",
     ConfigurationManagerEndPoint: "ConfigurationManager.php",
 };
 
-const errorImageUrl = {
+export const errorImageUrl = {
     imagePath_404: "assets/images/404.png",
     imagePath_500: "assets/images/500.png",
     imagePath_maintenance: "assets/images/maintenance.png",

@@ -129,27 +129,20 @@ const Accueil = ({ param, defaultImage, onSuccess }) => {
         );
     }, []);
 
-    useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        const params = {
-            mode: mode.getProductMode,
-            LG_PROID: localStorage.getItem("selectedProductId"), // ID du produit à récupérer
-        };
+    // useEffect(() => {
+    //     const storedUser = JSON.parse(localStorage.getItem("user"));
+    //     const params = {
+    //         mode: mode.getProductMode,
+    //         LG_PROID: localStorage.getItem("selectedProductId"), // ID du produit à récupérer
+    //     };
 
-        fetchData(params, apiEndpointe.StockManagerEndPoint);
-        if (!storedUser) {
-            navigate(paths.signIn); // Redirection si l'utilisateur n'est pas connecté
-        } else {
-            setUser(storedUser);
-
-            // const params = {
-            //   mode: mode.getProductMode,
-            //   LG_PROID: localStorage.getItem("selectedProductId"), // ID du produit à récupérer
-            // };
-
-            // fetchData(params, apiEndpointe.StockManagerEndPoint);
-        }
-    }, [navigate]);
+    //     fetchData(params, apiEndpointe.StockManagerEndPoint);
+    //     if (!storedUser) {
+    //         navigate(paths.signIn); // Redirection si l'utilisateur n'est pas connecté
+    //     } else {
+    //         setUser(storedUser);
+    //     }
+    // }, [navigate]);
 
     return (
         <>
@@ -168,11 +161,13 @@ const Accueil = ({ param, defaultImage, onSuccess }) => {
                         />
 
                         <div className="container mt-5">
-                            <ProductCarousel
-                                products={lastestProducts}
-                                sectionTitle="Nouveautés"
-                                imagelBaseUrl={param.urlBaseImage}
-                            />
+                            <div>
+                                <ProductCarousel
+                                    products={lastestProducts}
+                                    sectionTitle="Nouveautés"
+                                    imagelBaseUrl={param.urlBaseImage}
+                                />
+                            </div>
 
                             <SpecialPromoSlider ImagelBaseUrl={urlBaseImage} />
 

@@ -14728,6 +14728,11 @@ body .product-popup {
   font-weight: bold;
 }
 
+.header a.active {
+  /* color: #336699; */
+  font-weight: bold;
+}
+
 .header-top,
 .header-middle,
 .header-bottom {
@@ -14902,18 +14907,13 @@ body .product-popup {
   color: var(--snproveci-blue);
   /* background: var(--snproveci-blue-extralight); */
   font-size: 1.2rem;
-  border-bottom: 1px solid #eee;
+  /* border-bottom: 1px solid #eee; */
 }
 
 .header-middle .container {
     padding-top: 3.2rem;
     padding-bottom: 3.2rem;
   }
-.header-middle .header-left {
-  -webkit-box-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-}
 
 .account {
   display: -webkit-box;
@@ -15923,7 +15923,14 @@ body .product-popup {
 }
 .menu > li:hover > a:not(.menu-title), .menu > li.active > a:not(.menu-title) {
   color: #336699;
+  opacity: .6
 }
+
+.menu > li > a.active{
+  color: #336699;
+  opacity: .6
+}
+
 .menu > li:hover > .submenu,
 .menu > li:hover .megamenu, .menu > li.show > .submenu,
 .menu > li.show .megamenu {
@@ -15965,12 +15972,12 @@ body .product-popup {
   transition: transform 0.3s ease;
   transition: transform 0.3s ease, -webkit-transform 0.3s ease;
 }
-.active-underline > li:hover > a::before, .active-underline > li.active > a::before {
+/* .active-underline > li:hover > a::before, .active-underline > li.active > a::before, .active-underline > li > a.active::before {
   -webkit-transform-origin: left center;
           transform-origin: left center;
   -webkit-transform: scale(1, 1);
           transform: scale(1, 1);
-}
+} */
 
 .has-submenu > a::after {
   display: inline-block;

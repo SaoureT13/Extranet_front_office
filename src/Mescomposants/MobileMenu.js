@@ -65,7 +65,7 @@ const MobileMenu = ({ megaMenu }) => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="blog.html">Contacts</Link>
+                                    <Link to="/contact">Contacts</Link>
                                 </li>
                                 {JSON.parse(
                                     localStorage.getItem("userData")
@@ -82,9 +82,6 @@ const MobileMenu = ({ megaMenu }) => {
                                                 </Link>
                                                 <Link to="/factures">
                                                     Mes factures
-                                                </Link>
-                                                <Link to="/mes-commandes">
-                                                    Mes règlements
                                                 </Link>
                                             </li>
                                         </ul>

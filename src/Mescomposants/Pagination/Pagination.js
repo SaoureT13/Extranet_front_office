@@ -1,6 +1,13 @@
 import React from "react";
 
 const Pagination = ({ totalPages, currentPage, onPageChange, pageNumbers }) => {
+    const top = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
     return (
         <div className="toolbox toolbox-pagination justify-content-between">
             <ul className="pagination">
@@ -12,6 +19,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange, pageNumbers }) => {
                         onClick={(e) => {
                             e.preventDefault();
                             onPageChange(Math.max(1, currentPage - 1));
+                            top();
                         }}
                     >
                         <i className="w-icon-long-arrow-left" />
@@ -38,6 +46,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange, pageNumbers }) => {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     onPageChange(pageNumber);
+                                    top();
                                 }}
                                 className={`page-link`}
                                 tabIndex="0"
@@ -64,6 +73,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange, pageNumbers }) => {
                         onClick={(e) => {
                             e.preventDefault();
                             onPageChange(Math.min(totalPages, currentPage + 1));
+                            top();
                         }}
                         className="btn btn-link"
                     >

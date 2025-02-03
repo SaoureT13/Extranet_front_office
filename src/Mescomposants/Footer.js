@@ -14,7 +14,7 @@ function Footer({ param = {} }) {
     };
 
     return (
-        <div className={` ${param.userData != null ? "bgUserConnected" : ""}`}>
+        <div style={{ backgroundColor: "white" }}>
             <footer
                 className=" pt-10"
                 data-animation-options='{"name": "fadeIn"}'

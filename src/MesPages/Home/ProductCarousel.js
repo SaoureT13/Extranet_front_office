@@ -33,7 +33,8 @@ const ProductCarousel = ({ products, sectionTitle, imagelBaseUrl }) => {
         },
       }}
     > */}
-            <div className="d-flex"
+            <div
+                className="d-flex"
                 style={{
                     width: "100%",
                     overflowX: "auto",
@@ -49,7 +50,7 @@ const ProductCarousel = ({ products, sectionTitle, imagelBaseUrl }) => {
                 >
                     {products?.map((product) => (
                         // <SplideSlide key={product.id}>
-                        <ProductWrap product={product} col_css="" />
+                        <ProductWrap product={product} />
                         // </SplideSlide>
                     ))}
                 </div>

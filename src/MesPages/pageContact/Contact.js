@@ -2,11 +2,10 @@ import React from "react";
 // import Header from '../../Mescomposants/Header'; // Importation du composant Header
 import Footer from "../../Mescomposants/Footer";
 
-const Contact = () => {
+const Contact = ({param}) => {
     return (
         <>
-            <div id="otherpage">
-                {/* <Header /> */}
+            <div id="otherpage" className={` ${param.userData ? "bgUserConnected" : ""}`}>
 
                 <main className="main">
                     {/* Start of Page Header */}
@@ -15,22 +14,6 @@ const Contact = () => {
                             <h1 className="page-title mb-0">Contactez-nous</h1>
                         </div>
                     </div>
-                    {/* End of Page Header */}
-
-                    {/* Start of Breadcrumb */}
-                    {/* <nav className="breadcrumb-nav mb-10 pb-1">
-        <div className="container">
-          <ul className="breadcrumb">
-            <li>
-              <a href="demo1.html">Home</a>
-            </li>
-            <li>Contact Us</li>
-          </ul>
-        </div>
-      </nav> */}
-                    {/* End of Breadcrumb */}
-
-                    {/* Start of PageContent */}
                     <div className="page-content contact-us">
                         <div className="container">
                             <section className="content-title-section mb-10">
@@ -330,7 +313,9 @@ const Contact = () => {
                                                     id="username"
                                                     name="username"
                                                     className="form-control"
-                                                    style={{ borderColor: "#214293" }}
+                                                    style={{
+                                                        borderColor: "#214293",
+                                                    }}
                                                 />
                                             </div>
                                             <div className="form-group">
@@ -342,7 +327,9 @@ const Contact = () => {
                                                     id="email_1"
                                                     name="email_1"
                                                     className="form-control"
-                                                    style={{ borderColor: "#214293" }}
+                                                    style={{
+                                                        borderColor: "#214293",
+                                                    }}
                                                 />
                                             </div>
                                             <div className="form-group">
@@ -355,7 +342,9 @@ const Contact = () => {
                                                     cols={30}
                                                     rows={5}
                                                     className="form-control"
-                                                    style={{ borderColor: "#214293" }}
+                                                    style={{
+                                                        borderColor: "#214293",
+                                                    }}
                                                 ></textarea>
                                             </div>
                                             <button

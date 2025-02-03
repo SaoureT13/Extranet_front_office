@@ -34,3 +34,22 @@ export function verifyImageLink(url) {
         img.src = url;
     });
 }
+
+export function HighlightText({ text, keywords }) {
+    if (!keywords.length) return <p>{text}</p>;
+
+    const regex = new RegExp(`(${keywords.join("|")})`, "gi");
+    const parts = text.split(regex);
+
+    return (
+        <p>
+            {parts.map((part, index) =>
+                keywords.includes(part) ? (
+                    <strong key={index}>{part.toUpperCase()}</strong>
+                ) : (
+                    part
+                )
+            )}
+        </p>
+    );
+}

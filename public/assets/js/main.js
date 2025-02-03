@@ -204,7 +204,7 @@ $.extend($.easing, {
                             var i = this.$el.find(".category-dropdown .dropdown-box");
                             i.length && (this.top += i[0].offsetHeight);
                         }
-                        this.isWrap ? e || this.unwrap() : e && this.wrap(), (Wolmart.sticky_top_height = 0), t && setTimeout(this.refreshSize.bind(this), 50);
+                        this.isWrap ? e || this.unwrap() : e, (Wolmart.sticky_top_height = 0), t && setTimeout(this.refreshSize.bind(this), 50);
                     }),
                     (e.prototype.refresh = function (t, e) {
                         var i = window.pageYOffset + e.offsetTop,

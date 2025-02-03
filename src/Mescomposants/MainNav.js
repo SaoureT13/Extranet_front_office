@@ -9,46 +9,43 @@ const MainNav = ({ param, megaMenu }) => {
         },
         {
             label: "NOS PRODUITS",
+            href: "/catalogue",
             megamenu: megaMenu || [
                 {
                     title: "Médicaments d’élevages",
                     items: [
-                        { label: "ANTIBIOTIQUES", href: "/shop" },
-                        { label: "ANTICOCCIDIENS", href: "/shop" },
-                        { label: "ANTI PARASITAIRES", href: "/shop" },
-                        { label: "ANTI-STRESS", href: "/shop" },
-                        { label: "PIERRES À LÉCHER", href: "/shop" },
-                        { label: "TRYPANOCIDES", href: "/shop" },
-                        { label: "VACCINS", href: "/shop" },
-                        { label: "VITAMINES", href: "/shop" },
+                        { label: "ANTIBIOTIQUES", href: "/catalogue" },
+                        { label: "ANTICOCCIDIENS", href: "/catalogue" },
+                        { label: "ANTI PARASITAIRES", href: "/catalogue" },
+                        { label: "ANTI-STRESS", href: "/catalogue" },
+                        { label: "PIERRES À LÉCHER", href: "/catalogue" },
+                        { label: "TRYPANOCIDES", href: "/catalogue" },
+                        { label: "VACCINS", href: "/catalogue" },
+                        { label: "VITAMINES", href: "/catalogue" },
                     ],
                 },
                 {
                     title: "Médicaments animaux de compagnie",
                     items: [
-                        { label: "ALIMENTS", href: "/shop", tip: "New" },
-                        { label: "ANTIBIOTIQUES", href: "/shop" },
-                        { label: "ANTICOCCIDIENS", href: "/shop" },
-                        { label: "ANTI PARASITAIRES", href: "/shop" },
-                        { label: "ANTI-STRESS", href: "/shop" },
-                        { label: "TRYPANOCIDES", href: "/shop" },
-                        { label: "VACCINS", href: "/shop" },
-                        { label: "VITAMINES", href: "/shop" },
+                        { label: "ALIMENTS", href: "/catalogue", tip: "New" },
+                        { label: "ANTIBIOTIQUES", href: "/catalogue" },
+                        { label: "ANTICOCCIDIENS", href: "/catalogue" },
+                        { label: "ANTI PARASITAIRES", href: "/catalogue" },
+                        { label: "ANTI-STRESS", href: "/catalogue" },
+                        { label: "TRYPANOCIDES", href: "/catalogue" },
+                        { label: "VACCINS", href: "/catalogue" },
+                        { label: "VITAMINES", href: "/catalogue" },
                     ],
                 },
                 {
                     title: "Matériel vétérinaire",
                     items: [
-                        { label: "Nouveauté", href: "/shop" },
-                        { label: "Promotions", href: "/shop" },
+                        { label: "Nouveauté", href: "/catalogue" },
+                        { label: "Promotions", href: "/catalogue" },
                     ],
                 },
             ],
         },
-        // {
-        //     label: "SOCIÉTÉ",
-        //     href: "/societe",
-        // },
         {
             label: "SERVICES",
             href: "/services",
@@ -61,7 +58,7 @@ const MainNav = ({ param, megaMenu }) => {
         ...(param.userData
             ? [
                   {
-                      label: "TABLEAU DE BOARD",
+                      label: "TABLEAU DE BORD",
                       href: "/dashboard",
                       submenu: [
                           {
@@ -76,10 +73,6 @@ const MainNav = ({ param, megaMenu }) => {
                               label: "Mes factures",
                               href: "/factures",
                           },
-                          {
-                              label: "Mes règlements",
-                              href: "vendor-wc-store-list.html",
-                          },
                       ],
                   },
               ]
@@ -87,10 +80,12 @@ const MainNav = ({ param, megaMenu }) => {
     ];
 
     return (
-        <div className="header-bottom sticky-content fix-top sticky-header">
+        <div
+            className={`header-bottom sticky-content fix-top sticky-header }`}
+        >
             <div className="container">
                 <div className="inner-wrap">
-                    <div className="header-left">
+                    <div className="header-left" style={{ margin: "0 auto" }}>
                         <nav className="main-nav">
                             <ul className="menu active-underline">
                                 {menuItems.map((item, index) => (

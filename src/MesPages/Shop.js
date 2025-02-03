@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import TopBar from "../Mescomposants/Header/TopBar";
-import AppMenu from "../Mescomposants/AppMenu";
-import MobileMenu from "../Mescomposants/MobileMenu";
-import Footer from "../Mescomposants/Footer";
 import ShopSidebar from "../Mescomposants/ShopSidebar";
-import ClipLoader from "react-spinners/ClipLoader";
-import { fetchEvenements, crudData } from "../services/apiService";
-import ErrorCard from "../Mescomposants/ErrorCard";
+import { crudData } from "../services/apiService";
 import ProductWrap from "../Mescomposants/Product/ProductWrap";
 import Pagination from "../Mescomposants/Pagination/Pagination"; // Import the new Pagination component
 import { useSearchParams } from "react-router-dom";
@@ -28,7 +22,6 @@ const Shop = ({ param, defaultImage }) => {
         });
         delete filters.limit;
         delete filters.page;
-        console.log(filters);
         return filters;
     });
     const [page, setPage] = useState(() => {
@@ -207,7 +200,7 @@ const Shop = ({ param, defaultImage }) => {
                                         </div>
                                     ) : data !== undefined &&
                                       data.length > 0 ? (
-                                        <div className="product-wrapper row cols-xl-4 cols-md-3 cols-sm-1 cols-1">
+                                        <div className="product-wrapper row cols-xl-4 cols-md-3 cols-sm-2 cols-2">
                                             {data.map((product) => (
                                                 <ProductWrap
                                                     key={product.ArtID}

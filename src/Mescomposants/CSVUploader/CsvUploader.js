@@ -2,20 +2,10 @@ import React, { useState } from "react";
 import { crudData } from "../../services/apiService";
 import { toast } from "react-toastify";
 import { formatPrice } from "../../MesPages/Panier/Cart";
+import * as XLSX from "xlsx";
 
-const CSVUploader = ({
-    onHandleProductData,
-    fetchData,
-    onHandlePanierData,
-    fetchPanierData,
-    data,
-    onHandlesetData,
-    params,
-    onHandleSuccess,
-}) => {
+const CSVUploader = ({ data, onHandlesetData, params, onHandleSuccess }) => {
     const mode = JSON.parse(localStorage.getItem("appMode"));
-    const apiEndpointe = JSON.parse(localStorage.getItem("apiEndpointe"));
-    const userData = JSON.parse(localStorage.getItem("userData"));
     const [currentPage, setCurrentPage] = useState(1);
     const [currentFileName, setCurrentFileName] = useState("");
     const rowsPerPage = 10; // Nombre de lignes par page
@@ -26,22 +16,34 @@ const CSVUploader = ({
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
+            const extension = file.name.split(".")[1];
+            if (extension === "csv") {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    parseCSV(content);
+                };
+                reader.readAsText(file);
+            } else if (extension === "xlsx") {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var data = e.target.result;
+                    let readedData = XLSX.read(data, { type: "binary" });
+                    const wsname = readedData.SheetNames[0];
+                    const ws = readedData.Sheets[wsname];
 
-            reader.onload = (e) => {
-                const content = e.target.result;
-                parseCSV(content);
-            };
-
-            reader.readAsText(file);
+                    const jsonData = XLSX.utils.sheet_to_json(ws, {
+                        header: 1,
+                    });
+                    parseXLSX(jsonData);
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                return;
+            }
+            setCurrentFileName(event.target.files[0].name);
         }
-        setCurrentFileName(event.target.files[0].name);
     };
-
-    //TODO
-    //Construire la fiche rapport en excel ou txt, la rendre uploadable.
-    //Ajouter un bouton pour télécharger la fiche rapport
-    //Dans le fichier fait un produit problematique par ligne
 
     const parseCSV = (csvText) => {
         const rows = csvText.trim().split("\n"); // Divise les lignes
@@ -55,7 +57,18 @@ const CSVUploader = ({
         if (parsedData.length > 0) {
             fetchProductsList(parsedData);
         }
-        // (parsedData);
+    };
+
+    const parseXLSX = (jsonData) => {
+        const parsedData = jsonData.map((row) => {
+            return {
+                str_proname: row[0],
+                int_cprquantity: row[1],
+            };
+        });
+        if (parseXLSX.length > 0) {
+            fetchProductsList(parsedData);
+        }
     };
 
     // Pagination logic
@@ -82,9 +95,6 @@ const CSVUploader = ({
             STR_UTITOKEN: params.userData.STR_UTITOKEN,
             CMD_DATA: JSON.stringify(data),
         };
-
-        console.log(payload);
-
         //Envoyer les données vers l'API
         crudData(payload, params.apiEndpointe.CommandeManagerEndPoint)
             .then((response) => {
@@ -95,39 +105,28 @@ const CSVUploader = ({
                             response.data.LG_COMMID
                         );
                         onHandleSuccess();
-                        const paramPanier = {
-                            mode: mode.getClientPanierMode,
-                            LG_AGEID: userData?.LG_AGEID,
-                        };
-                        fetchPanierData(
-                            paramPanier,
-                            apiEndpointe.CommandeManagerEndPoint,
-                            onHandlePanierData
-                        );
-                        const params = {
-                            mode: mode.listCommandeproductMode,
-                            LG_AGEID: userData?.LG_AGEID,
-                        };
-                        fetchData(
-                            params,
-                            apiEndpointe.CommandeManagerEndPoint,
-                            onHandleProductData
-                        );
-                        const newErrors = response.data.product_unavailable
-                            .filter(
-                                (item) =>
-                                    !errorReport.some(
-                                        (error) => error.codeProduit === item
-                                    )
-                            )
-                            .map((item) => {
-                                return {
-                                    codeProduit: item,
-                                    motif: "Produit en rupture de stock",
-                                };
-                            });
 
-                        setErrorReport((errors) => [...errors, ...newErrors]);
+                        if (response.data?.product_unavailable) {
+                            let newErrors = response.data?.product_unavailable
+                                .filter(
+                                    (item) =>
+                                        !errorReport.some(
+                                            (error) =>
+                                                error.codeProduit === item
+                                        )
+                                )
+                                .map((item) => {
+                                    return {
+                                        codeProduit: item,
+                                        motif: "Produit en rupture de stock",
+                                    };
+                                });
+                            setErrorReport((errors) => [
+                                ...errors,
+                                ...newErrors,
+                            ]);
+                        }
+
                         if (response.data.product_added_to_cart > 0) {
                             toast.success("Produits ajoutés au panier");
                         }
@@ -139,12 +138,19 @@ const CSVUploader = ({
                 }
             })
             .catch((error) => {
-                console.error("Erreur lors de l'ajout au panier:", error);
+                console.log(error);
+                if (error) {
+                    toast.error("Erreur lors de l'ajout au panier:", error);
+                }
             })
             .finally(() => {
                 setIsLoadingSpinner(false);
                 onHandlesetData([]);
                 setCurrentFileName("");
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
             });
     };
 
@@ -163,7 +169,6 @@ const CSVUploader = ({
                             response.data.desc_statut
                         );
                     } else {
-                        console.log(response.data.products);
                         onHandlesetData(response.data.products);
                         const errors = response.data.products_not_found.map(
                             (item) => {
@@ -189,40 +194,92 @@ const CSVUploader = ({
 
     return (
         <div style={{}}>
-            <h2>Charger un fichier de commande</h2>
+            <h2>Charger un fichier de commande </h2>
             <p style={{ marginTop: "-20px" }}>
-                Choisissez un fichier au format <u>csv</u>
+                Vous pouvez importer un fichier <u>Csv</u> ou <u>Excel</u> pour
+                la saisie de votre commande automatiquement.
+                <br />
+                Cliquer sur une icone pour telecharger un exemplaire.
             </p>
-            <label
-                htmlFor="file-upload"
+            <div
+                className="d-flex flex-wrap"
                 style={{
-                    display: "inline-block",
-                    backgroundColor: "#2b4fa9",
-                    color: "#fff",
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
+                    gap: "20px",
                     marginBottom: "20px",
+                    marginTop: "-20px",
                 }}
             >
-                Sélectionner fichier
-            </label>
-            <input
-                id="file-upload"
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                style={{ display: "none" }}
-            />
-            {currentFileName && (
                 <div>
-                    <span>
-                        <strong>Fichier sélectionné :</strong>
-                    </span>
-                    <p>{currentFileName}</p>
+                    <h5 style={{ margin: 0 }}>Csv:</h5>
+                    <a
+                        className=""
+                        href="/assets/example_file/example.csv"
+                        download
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            fill="#008000"
+                            width={24}
+                            height={24}
+                        >
+                            <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 144-208 0c-35.3 0-64 28.7-64 64l0 144-48 0c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM200 352l16 0c22.1 0 40 17.9 40 40l0 8c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-8c0-4.4-3.6-8-8-8l-16 0c-4.4 0-8 3.6-8 8l0 80c0 4.4 3.6 8 8 8l16 0c4.4 0 8-3.6 8-8l0-8c0-8.8 7.2-16 16-16s16 7.2 16 16l0 8c0 22.1-17.9 40-40 40l-16 0c-22.1 0-40-17.9-40-40l0-80c0-22.1 17.9-40 40-40zm133.1 0l34.9 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-34.9 0c-7.2 0-13.1 5.9-13.1 13.1c0 5.2 3 9.9 7.8 12l37.4 16.6c16.3 7.2 26.8 23.4 26.8 41.2c0 24.9-20.2 45.1-45.1 45.1L304 512c-8.8 0-16-7.2-16-16s7.2-16 16-16l42.9 0c7.2 0 13.1-5.9 13.1-13.1c0-5.2-3-9.9-7.8-12l-37.4-16.6c-16.3-7.2-26.8-23.4-26.8-41.2c0-24.9 20.2-45.1 45.1-45.1zm98.9 0c8.8 0 16 7.2 16 16l0 31.6c0 23 5.5 45.6 16 66c10.5-20.3 16-42.9 16-66l0-31.6c0-8.8 7.2-16 16-16s16 7.2 16 16l0 31.6c0 34.7-10.3 68.7-29.6 97.6l-5.1 7.7c-3 4.5-8 7.1-13.3 7.1s-10.3-2.7-13.3-7.1l-5.1-7.7c-19.3-28.9-29.6-62.9-29.6-97.6l0-31.6c0-8.8 7.2-16 16-16z" />
+                        </svg>
+                    </a>
                 </div>
-            )}
+                <div>
+                    <h5 style={{ margin: 0 }}>Excel:</h5>
+
+                    <a
+                        className=""
+                        href="/assets/example_file/example.xlsx"
+                        download
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                            fill="#008000"
+                            width={24}
+                            height={24}
+                        >
+                            <path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM155.7 250.2L192 302.1l36.3-51.9c7.6-10.9 22.6-13.5 33.4-5.9s13.5 22.6 5.9 33.4L221.3 344l46.4 66.2c7.6 10.9 5 25.8-5.9 33.4s-25.8 5-33.4-5.9L192 385.8l-36.3 51.9c-7.6 10.9-22.6 13.5-33.4 5.9s-13.5-22.6-5.9-33.4L162.7 344l-46.4-66.2c-7.6-10.9-5-25.8 5.9-33.4s25.8-5 33.4 5.9z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div className="d-flex flex-wrap" style={{ gap: "10px" }}>
+                <div>
+                    <label
+                        htmlFor="file-upload"
+                        style={{
+                            display: "inline-block",
+                            backgroundColor: "#2b4fa9",
+                            color: "#fff",
+                            padding: "10px 20px",
+                            fontSize: "16px",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        Sélectionner fichier
+                    </label>
+                </div>
+                <input
+                    id="file-upload"
+                    type="file"
+                    accept=".csv, .xlsx"
+                    onChange={handleFileUpload}
+                    style={{ display: "none" }}
+                />
+                {currentFileName && (
+                    <div>
+                        <span>
+                            <strong>Fichier sélectionné :</strong>
+                        </span>
+                        <p>{currentFileName}</p>
+                    </div>
+                )}
+            </div>
 
             {errorReport.length > 0 && (
                 <div style={{ marginBottom: "40px" }}>
@@ -257,7 +314,15 @@ const CSVUploader = ({
             {data.length > 0 && (
                 <>
                     <h3>Liste produits à ajouter au panier :</h3>
-                    <div style={{ minHeight: "342px" }}>
+                    <div
+                        style={{
+                            width: "100%",
+                            overflowX: "auto",
+                            overflowY: "hidden",
+                            whiteSpace: "nowrap",
+                            position: "relative",
+                        }}
+                    >
                         <table
                             style={{
                                 width: "100%",
@@ -288,13 +353,28 @@ const CSVUploader = ({
                                         <td style={tableCellStyle}>
                                             {row.str_prodescription}
                                         </td>
-                                        <td style={{ ...tableCellStyle, textAlign: "right" }}>
+                                        <td
+                                            style={{
+                                                ...tableCellStyle,
+                                                textAlign: "right",
+                                            }}
+                                        >
                                             {formatPrice(row.int_propricevente)}
                                         </td>
-                                        <td style={{ ...tableCellStyle, textAlign: "center" }}>
+                                        <td
+                                            style={{
+                                                ...tableCellStyle,
+                                                textAlign: "center",
+                                            }}
+                                        >
                                             {row.int_cprquantity}
                                         </td>
-                                        <td style={{ ...tableCellStyle, textAlign: "right" }}>
+                                        <td
+                                            style={{
+                                                ...tableCellStyle,
+                                                textAlign: "right",
+                                            }}
+                                        >
                                             {formatPrice(row.dbl_montant)}
                                         </td>
                                     </tr>

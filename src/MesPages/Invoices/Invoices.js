@@ -163,18 +163,7 @@ function Invoices({ param = {} }) {
     return (
         <div className={` ${param.userData ? "bgUserConnected" : ""}`}>
             <div className="page-wrapper">
-                {/* Start of Header */}
-                {/* <TopBar /> */}
-
                 <main className="main cart">
-                    {/* <AppMenu /> */}
-
-                    {/* Start of Breadcrumb */}
-                    {/* <nav className="breadcrumb-nav">
-</nav> */}
-
-                    {/* End of Breadcrumb */}
-                    {/* Start of PageContent */}
                     <div className="page-content">
                         <div className="container">
                             <div
@@ -186,7 +175,7 @@ function Invoices({ param = {} }) {
                                 </div>
 
                                 <>
-                                    <div className="d-flex align-items-top mb-4">
+                                    <div className="d-flex align-items-top mb-4 flex-wrap">
                                         <div
                                             className="search-bar mb-4"
                                             style={{ marginRight: "20px" }}
@@ -304,7 +293,16 @@ function Invoices({ param = {} }) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-lg-12 pr-lg-4 mb-6 table-min-h d-flex flex-column">
+                                    <div
+                                        className="col-lg-12 pr-lg-4 mb-6 table-min-h d-flex flex-column"
+                                        style={{
+                                            width: "100%",
+                                            overflowX: "auto",
+                                            overflowY: "hidden",
+                                            whiteSpace: "nowrap",
+                                            position: "relative",
+                                        }}
+                                    >
                                         <table className=" cart-table">
                                             <thead>
                                                 <tr>
@@ -312,6 +310,7 @@ function Invoices({ param = {} }) {
                                                         className="product-quantity"
                                                         style={{
                                                             textAlign: "left",
+                                                            minWidth: "150px",
                                                         }}
                                                     >
                                                         <span>N° Commande</span>
@@ -321,6 +320,7 @@ function Invoices({ param = {} }) {
                                                         className="product-price"
                                                         style={{
                                                             textAlign: "left",
+                                                            minWidth: "150px",
                                                         }}
                                                     >
                                                         <span>Date</span>
@@ -329,6 +329,7 @@ function Invoices({ param = {} }) {
                                                         className="product-quantity"
                                                         style={{
                                                             textAlign: "left",
+                                                            minWidth: "150px",
                                                         }}
                                                     >
                                                         <span>Montant TTC</span>
@@ -337,6 +338,7 @@ function Invoices({ param = {} }) {
                                                         className="product-subtotal"
                                                         style={{
                                                             textAlign: "left",
+                                                            minWidth: "150px",
                                                         }}
                                                     >
                                                         <span>Montant HT</span>
@@ -344,7 +346,7 @@ function Invoices({ param = {} }) {
                                                     <th
                                                         className="product-subtotal"
                                                         style={{
-                                                            textAlign: "left",
+                                                            textAlign: "center",
                                                         }}
                                                     >
                                                         <span>Statut</span>
@@ -440,13 +442,15 @@ function Invoices({ param = {} }) {
                                                                         </td>
                                                                         <td className="product-price">
                                                                             <p
-                                                                                className=""
+                                                                                className="text-center"
                                                                                 style={{
                                                                                     margin: "1em 0px",
                                                                                 }}
                                                                             >
                                                                                 {invoice.PcvEtatFNuf ===
-                                                                                "NufPcvEtatFNo" ? (
+                                                                                    "NufPCVEtatFNo" ||
+                                                                                invoice.PcvEtatFNuf ===
+                                                                                    "NufPcvEtatFNo" ? (
                                                                                     <span
                                                                                         className="badge badge-secondary"
                                                                                         style={{
@@ -467,11 +471,11 @@ function Invoices({ param = {} }) {
                                                                                             borderRadius:
                                                                                                 "99999%",
                                                                                             background:
-                                                                                                "#dc3545",
+                                                                                                "#fd7e14 ",
                                                                                             color: "#fff",
                                                                                         }}
                                                                                     >
-                                                                                        <svg
+                                                                                        {/* <svg
                                                                                             xmlns="http://www.w3.org/2000/svg"
                                                                                             viewBox="0 0 24 24"
                                                                                             fill="currentColor"
@@ -480,6 +484,16 @@ function Invoices({ param = {} }) {
                                                                                             }
                                                                                         >
                                                                                             <path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 10.5858L9.17157 7.75736L7.75736 9.17157L10.5858 12L7.75736 14.8284L9.17157 16.2426L12 13.4142L14.8284 16.2426L16.2426 14.8284L13.4142 12L16.2426 9.17157L14.8284 7.75736L12 10.5858Z"></path>
+                                                                                        </svg> */}
+                                                                                        <svg
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            viewBox="0 0 24 24"
+                                                                                            fill="currentColor"
+                                                                                            width={
+                                                                                                24
+                                                                                            }
+                                                                                        >
+                                                                                            <path d="M6 4H4V2H20V4H18V6C18 7.61543 17.1838 8.91468 16.1561 9.97667C15.4532 10.703 14.598 11.372 13.7309 12C14.598 12.628 15.4532 13.297 16.1561 14.0233C17.1838 15.0853 18 16.3846 18 18V20H20V22H4V20H6V18C6 16.3846 6.81616 15.0853 7.8439 14.0233C8.54682 13.297 9.40202 12.628 10.2691 12C9.40202 11.372 8.54682 10.703 7.8439 9.97667C6.81616 8.91468 6 7.61543 6 6V4ZM8 4V6C8 6.68514 8.26026 7.33499 8.77131 8H15.2287C15.7397 7.33499 16 6.68514 16 6V4H8ZM12 13.2219C10.9548 13.9602 10.008 14.663 9.2811 15.4142C9.09008 15.6116 8.92007 15.8064 8.77131 16H15.2287C15.0799 15.8064 14.9099 15.6116 14.7189 15.4142C13.992 14.663 13.0452 13.9602 12 13.2219Z"></path>
                                                                                         </svg>
                                                                                     </span>
                                                                                 ) : (

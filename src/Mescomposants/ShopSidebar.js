@@ -5,6 +5,13 @@ import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 const ShopSidebar = ({ onFilterChange, onResetAllFilters, activeFilters }) => {
     const filters = JSON.parse(localStorage.getItem("filters"));
 
+    const top = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
     return (
         <aside className="sidebar shop-sidebar left-sidebar sticky-sidebar-wrapper sidebar-fixed page-container">
             <div className="sidebar-content scrollable p-3">
@@ -51,8 +58,16 @@ const ShopSidebar = ({ onFilterChange, onResetAllFilters, activeFilters }) => {
                     {/* Reset Filters Button */}
                     <div className="reset-filters mt-4">
                         <button
-                            className="btn btn-secondary"
-                            onClick={onResetAllFilters}
+                            className="btn"
+                            style={{
+                                color: "#fff",
+                                borderColor: "#3656a1",
+                                backgroundColor: "#3656a1",
+                            }}
+                            onClick={() => {
+                                onResetAllFilters();
+                                top();
+                            }}
                         >
                             Réinitialiser les filtres
                         </button>

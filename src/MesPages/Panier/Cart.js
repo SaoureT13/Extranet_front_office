@@ -1,31 +1,17 @@
-// src/components/Accueil.js
-import React, { useState, useEffect, useContext } from "react"; // Importation de React et des hooks useState et useEffect
-import TopBar from "../../Mescomposants/Header/TopBar";
+import React, { useState, useEffect } from "react";
 import AppMenu from "../../Mescomposants/AppMenu";
-import MobileMenu from "../../Mescomposants/MobileMenu";
-import Footer from "../../Mescomposants/Footer";
-import ShopFilter from "../../Mescomposants/ShopFilter";
-import ShopCategory from "../../Mescomposants/ShopCategory";
-import ShopBrand from "../../Mescomposants/ShopBrand";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { useTheme } from "../../contexts/ThemeContext";
 import { NavLink } from "react-router-dom";
-
-// import ShopSidebar from './ShopSidebar';
-// import Product from './Product';
-// import MainContent from './MainContent';
-// import Header from './components/Header'; // Importation du composant Header
-import { useNavigate } from "react-router-dom"; // Utilisez useNavigate pour la redirection
-import { crudData, fullUrl } from "../../services/apiService"; // Importation de la fonction fetchEvenements depuis le fichier apiService
+import { useNavigate } from "react-router-dom";
+import { crudData, defaultImage, fullUrl } from "../../services/apiService";
 import CSVUploader from "../../Mescomposants/CSVUploader/CsvUploader";
 
 const Cart = ({ onSuccess, param = {} }) => {
     const { theme, toggleTheme } = useTheme();
 
     const mode = JSON.parse(localStorage.getItem("appMode"));
-    const date = JSON.parse(localStorage.getItem("appDate"));
     const apiEndpointe = JSON.parse(localStorage.getItem("apiEndpointe"));
-    const paths = JSON.parse(localStorage.getItem("appPaths"));
     const [user, setUser] = useState(null);
     const [productData, setProductData] = useState([]);
     /*Pagination*/
@@ -36,28 +22,10 @@ const Cart = ({ onSuccess, param = {} }) => {
     let indexOfFirstItem = indexOfLastItem - itemPerPage;
     /*Pagination*/
     const [quantities, setQuantities] = useState({});
-    const navigate = useNavigate();
     const [statusCode, setStatusCode] = useState(null); // Code statut HTTP
     const [isLoading, setIsLoading] = useState(false);
     const userData = JSON.parse(localStorage.getItem("userData"));
     const [cart, setCart] = useState([]);
-    const [csvData, setCsvData] = useState([]);
-
-    const handleCsvData = (data) => {
-        setCsvData(data);
-    };
-
-    //   useEffect(() => {
-    //     const user = JSON.parse(localStorage.getItem('userData'));
-    //     if (!user) {
-    //       navigate('/'); // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
-    //     }
-    //   }, [navigate]);
-
-    const handleChangeTheme = () => {
-        const newTheme = theme === "light" ? "dark" : "light";
-        toggleTheme(newTheme);
-    };
 
     useEffect(() => {
         setCurrentData(productData.slice(indexOfFirstItem, indexOfLastItem));
@@ -79,7 +47,6 @@ const Cart = ({ onSuccess, param = {} }) => {
         setIsLoading(true);
         crudData(params, url)
             .then((response) => {
-                setIsLoading(false);
                 if (response && response.status === 200) {
                     const produitVeto = response.data.lines || []; // Ensure it's an array
                     setProductData(
@@ -101,12 +68,14 @@ const Cart = ({ onSuccess, param = {} }) => {
                 }
             })
             .catch((error) => {
-                setIsLoading(false);
                 setStatusCode(404);
                 console.error(
                     "Erreur lors de la récupération des données:",
                     error
                 );
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     };
 
@@ -115,12 +84,10 @@ const Cart = ({ onSuccess, param = {} }) => {
             .then((response) => {
                 if (response.status === 200) {
                     if (response.data.code_statut === "1") {
-                        toast.success(response.data.desc_statut); // Notification de succès
                         onSuccess();
                         const params = {
                             mode: mode.listCommandeproductMode,
                             LG_AGEID: userData?.LG_AGEID,
-                            // LG_COMMID: userData.LG_COMMID,
                         };
                         fetchData(
                             params,
@@ -150,27 +117,6 @@ const Cart = ({ onSuccess, param = {} }) => {
             });
     };
 
-    const ClotuteCommproduit = (params, url) => {
-        crudData(params, url)
-            .then((response) => {
-                if (response.status === 200) {
-                    if (response.data.code_statut === "1") {
-                        toast.success(response.data.desc_statut);
-                        localStorage.setItem("LG_COMMID", "");
-                        onSuccess();
-                    } else {
-                        toast.error("Erreur : " + response.data.desc_statut);
-                    }
-                }
-            })
-            .catch((error) => {
-                console.error(
-                    "Erreur lors de la récupération des données:",
-                    error
-                );
-            });
-    };
-
     const handleQuantityChange = (productId, change) => {
         setQuantities((prevQuantities) => {
             const currentQuantity =
@@ -178,7 +124,7 @@ const Cart = ({ onSuccess, param = {} }) => {
                     ? prevQuantities[productId]
                     : productData.find((p) => p.PlvID === productId).PlvQteUV;
 
-            const newQuantity = Math.max(1, parseInt(currentQuantity) + change); // Assurez-vous que la quantité ne descende pas en dessous de 1
+            const newQuantity = Math.max(1, parseInt(currentQuantity) + change);
 
             const params = {
                 mode: mode.updateCommproduitMode,
@@ -213,23 +159,9 @@ const Cart = ({ onSuccess, param = {} }) => {
         setCurrentPage(1);
     };
 
-    const handleCloture = () => {
-        const params = {
-            mode: mode.validationCommandeMode,
-            LG_AGEID: userData?.LG_AGEID,
-            STR_UTITOKEN: userData.STR_UTITOKEN,
-        };
-
-        ClotuteCommproduit(params, apiEndpointe.CommandeManagerEndPoint);
-    };
-
-    const LG_COMMID = localStorage.getItem("LG_COMMID");
-
     const fetchPanierData = (params, url, setCart) => {
-        setIsLoading(true);
         crudData(params, url)
             .then((response) => {
-                setIsLoading(false);
                 if (response && response.status === 200) {
                     const produitVeto = response.data.data || []; // Ensure it's an array
                     setCart(produitVeto);
@@ -239,7 +171,6 @@ const Cart = ({ onSuccess, param = {} }) => {
                 }
             })
             .catch((error) => {
-                setIsLoading(false);
                 setStatusCode(404);
                 console.error(
                     "Erreur lors de la récupération des données:",
@@ -278,31 +209,8 @@ const Cart = ({ onSuccess, param = {} }) => {
     return (
         <div className={` ${param.userData ? "bgUserConnected" : ""}`}>
             <div className="page-wrapper">
-                {/* Start of Header */}
-                {/* <TopBar /> */}
-
                 <main className="main cart">
                     <AppMenu />
-
-                    {/* Start of Breadcrumb */}
-                    {/* <nav className="breadcrumb-nav">
-          <div className="container">
-            <ul className="breadcrumb shop-breadcrumb bb-no">
-              <li className="active">
-                <a href="cart.html">Shopping Cart</a>
-              </li>
-              <li>
-                <a href="checkout.html">Checkout</a>
-              </li>
-              <li>
-                <a href="order.html">Order Complete</a>
-              </li>
-            </ul>
-          </div>
-        </nav> */}
-
-                    {/* End of Breadcrumb */}
-                    {/* Start of PageContent */}
                     <div className="page-content">
                         <div className="container bg-blue-light">
                             <div
@@ -333,8 +241,17 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                     </tr>
                                                 </thead>
                                                 <tbody className="">
-                                                    {!currentData ||
+                                                    {isLoading &&
                                                     currentData.length === 0 ? (
+                                                        <tr className="">
+                                                            <td className="">
+                                                                Chargement des
+                                                                données...
+                                                            </td>
+                                                        </tr>
+                                                    ) : !isLoading &&
+                                                      currentData.length ===
+                                                          0 ? (
                                                         <tr className="">
                                                             <td className="">
                                                                 Votre panier est
@@ -358,9 +275,7 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                             <td className="product-thumbnail">
                                                                                 <div className="p-relative">
                                                                                     <NavLink
-                                                                                        to={
-                                                                                            "/detail-produit"
-                                                                                        }
+                                                                                        to={`/${product.str_proslug}`}
                                                                                         onClick={() =>
                                                                                             handleClick(
                                                                                                 product
@@ -373,7 +288,8 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                                                     product.str_propic
                                                                                                         ? fullUrl +
                                                                                                           product.str_propic
-                                                                                                        : "assets/images/products/AMOXY-C1KG-FACE.jpg"
+                                                                                                        : fullUrl +
+                                                                                                          defaultImage
                                                                                                 }`}
                                                                                                 alt="product"
                                                                                                 width={
@@ -400,9 +316,7 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                             </td>
                                                                             <td className="product-name">
                                                                                 <NavLink
-                                                                                    to={
-                                                                                        "/detail-produit"
-                                                                                    }
+                                                                                    to={`/${product.str_proslug}`}
                                                                                     onClick={() =>
                                                                                         handleClick(
                                                                                             product
@@ -414,15 +328,15 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                                     }
                                                                                 </NavLink>
                                                                             </td>
-                                                                            <td className="product-price">
+                                                                            <td className="">
                                                                                 <span className="amount">
                                                                                     {product &&
                                                                                         formatPrice(
                                                                                             parseInt(
                                                                                                 product.PlvPUNet
                                                                                             )
-                                                                                        )}{" "}
-                                                                                    FCFA
+                                                                                        ) +
+                                                                                            " FCFA"}{" "}
                                                                                 </span>
                                                                             </td>
                                                                             <td className="product-quantity">
@@ -451,7 +365,6 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                                                 e
                                                                                                     .target
                                                                                                     .value;
-                                                                                            // Validation pour que la valeur soit toujours un nombre entier valide
                                                                                             if (
                                                                                                 !isNaN(
                                                                                                     inputValue
@@ -576,7 +489,7 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                     aria-label="Previous"
                                                                 >
                                                                     <i className="w-icon-long-arrow-left"></i>
-                                                                    Prev
+                                                                    Préc
                                                                 </a>
                                                             </li>
                                                             <li
@@ -608,7 +521,7 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                             : false
                                                                     }
                                                                 >
-                                                                    Next{" "}
+                                                                    Suiv{" "}
                                                                     <i className="w-icon-long-arrow-right"></i>
                                                                 </a>
                                                             </li>
@@ -668,35 +581,12 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                     </div>
                                                 </div>
                                             )}
-                                        {/* <a href='/livraison' className="btn btn-block btn-dark btn-icon-right btn-rounded  btn-checkout" onClick={handleCloture}> Valider ma commande
-                <i className="w-icon-long-arrow-right" />
-              </a> */}
                                     </>
                                 ) : (
                                     <p className="text-center">
                                         Votre panier est vide.
                                     </p>
                                 )}
-                            </div>
-                            <div className="">
-                                <div
-                                    className="mb-4"
-                                    style={{
-                                        padding: "2.3rem 3rem 3rem 3rem",
-                                        lineHeight: 1,
-                                    }}
-                                >
-                                    <CSVUploader
-                                        onHandlePanierData={setCart}
-                                        fetchData={fetchData}
-                                        onHandleProductData={setProductData}
-                                        fetchPanierData={fetchPanierData}
-                                        data={csvData}
-                                        onHandlesetData={handleCsvData}
-                                        params={param}
-                                        onHandleSuccess={onSuccess}
-                                    />
-                                </div>
                             </div>
                         </div>
                     </div>

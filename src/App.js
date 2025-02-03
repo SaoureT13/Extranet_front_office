@@ -25,6 +25,8 @@ import { ToastContainer } from "react-toastify";
 import Commandes from "./MesPages/Commandes/Commandes.js";
 import InvoicePDF from "./Mescomposants/exportPDF/InvoicePDF.js";
 import Invoices from "./MesPages/Invoices/Invoices.js";
+import Import from "./MesPages/Import/Import.js";
+import Services from "./MesPages/Services/Services.js";
 
 function App() {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -49,16 +51,10 @@ function App() {
     const [triggerRequest, setTriggerRequest] = useState(false);
 
     const handleSuccess = () => {
-        console.log(
-            "Succès de la première requête, on déclenche la deuxième..."
-        );
         setTriggerRequest(true); // Déclenche la requête dans B
     };
 
     const handleRequestComplete = () => {
-        console.log(
-            "Requête dans B terminée, réinitialisation de triggerRequest"
-        );
         setTriggerRequest(false); // Réinitialise l'état pour permettre un nouveau clic
     };
 
@@ -92,7 +88,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/detail-produit"
+                        path="/:slug"
                         element={
                             <DetailProduct
                                 param={params}
@@ -103,19 +99,22 @@ function App() {
                         }
                     />
                     <Route
-                        path="/shop/:params?"
+                        path="/catalogue/:params?"
                         element={
                             <Shop param={params} defaultImage={defaultImage} />
                         }
                     />
                     <Route
-                        path="/cart"
+                        path="/panier"
                         element={
                             <Cart param={params} onSuccess={handleSuccess} />
                         }
                     />
                     <Route path="/form" element={<Form />} />
-                    <Route path="/contact" element={<Contact />} />
+                    <Route
+                        path="/contact"
+                        element={<Contact param={params} />}
+                    />
                     <Route
                         path="/choix-livraison"
                         element={<Livraison onSuccess={handleSuccess} />}
@@ -129,6 +128,16 @@ function App() {
                     <Route path="/mes-commandes" element={<Commandes />} />
                     <Route path="/factures" element={<Invoices />} />
                     <Route path="/pdf-tst" element={<InvoicePDF />} />
+                    <Route
+                        path="/importation"
+                        element={
+                            <Import param={params} onSuccess={handleSuccess} />
+                        }
+                    />
+                    <Route
+                        path="/services"
+                        element={<Services param={params} />}
+                    />
                     {/* Redirection vers la page d'accueil */}
                 </Routes>
                 <Footer param={params} />

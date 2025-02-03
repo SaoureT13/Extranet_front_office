@@ -1,92 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { crudData } from "../../services/apiService";
 
-// Données des onglets
-const tabsData = [
-    {
-        id: "product-tab-centre-nord",
-        title: "Centre-nord",
-    },
-    {
-        id: "product-tab-est",
-        title: "Est",
-    },
-    {
-        id: "product-tab-sud-est",
-        title: "Sud-est",
-    },
-];
-
-// Données des listes
-const listsData = {
-    "product-tab-centre-nord": [
-        {
-            id: 67,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-            areas: "Abidjan - Agboville - Adzopé - Abengourou - Agnibilékrou - Daoukro",
-        },
-        {
-            id: 71,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-        },
-        {
-            id: 72,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-        },
-    ],
-    "product-tab-est": [
-        {
-            id: 69,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-        },
-        {
-            id: 71,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-        },
-        {
-            id: 72,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-        },
-    ],
-    "product-tab-sud-est": [
-        {
-            id: 70,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-        },
-        {
-            id: 71,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-        },
-        {
-            id: 72,
-            date: "01/07 avant 12H00",
-            deliveryDate: "03/07",
-        },
-    ],
-};
-
-const ProductTabs = ({ param = {} }) => {
-    // Initialiser l'onglet actif avec 'product-tab-est'
+function Services({ param }) {
     const [activeTab, setActiveTab] = useState("product-tab-est");
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState({});
     const apiEndpointe = JSON.parse(localStorage.getItem("apiEndpointe"));
     const mode = JSON.parse(localStorage.getItem("appMode"));
     const userData = JSON.parse(localStorage.getItem("userData"));
-
-    // useEffect(() => {
-    //   if(Object.entries(data).length !== 0){
-    //     setActiveTab(data?.tabsData[0].id);
-    //   }
-    // }, [data])
 
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
@@ -117,8 +38,6 @@ const ProductTabs = ({ param = {} }) => {
     useEffect(() => {
         const params = {
             mode: mode.getClientCalendarMode,
-            LG_AGEID: userData?.LG_AGEID,
-            // LG_AGEID: "MLrfU4PCOrnQ7C8na9mz",
         };
         fetchData(params, apiEndpointe.CommandeManagerEndPoint);
     }, [
@@ -132,8 +51,8 @@ const ProductTabs = ({ param = {} }) => {
             <div className="container">
                 <div className="bg-blue-light p-5">
                     <div className="delivery-schedule-header">
-                        <h2>Votre calendrier de livraison</h2>
-                        {/* <p>
+                        <h2>Calendrier de livraison général</h2>
+                        <p>
                             Les livraisons seront gratuites, mais nous ne
                             prendrons pas les produits de nos concurrents. NB:
                             Veuillez respecter la date limite de Commande{" "}
@@ -142,7 +61,7 @@ const ProductTabs = ({ param = {} }) => {
                             prises en compte pour la livraison de l'intérieur,
                             pour nous permettre de préparer les colis, et ne pas
                             retarder la livraison.
-                        </p> */}
+                        </p>
                     </div>
                     <div className="tab tab-nav-boxed tab-nav-underline product-tabs">
                         {isLoading ? (
@@ -200,7 +119,8 @@ const ProductTabs = ({ param = {} }) => {
                                                                 | Date limite de
                                                                 commande{" "}
                                                                 {item.date} |
-                                                                Livraison{" "}
+                                                                Livraison prévue
+                                                                le{" "}
                                                                 {
                                                                     item.deliveryDate
                                                                 }
@@ -221,10 +141,7 @@ const ProductTabs = ({ param = {} }) => {
                             </>
                         ) : (
                             <div className="tab-content d-flex justify-content-center p-3">
-                                <p>
-                                    Vous n'êtes présent sur aucun calendrier de
-                                    livraison
-                                </p>
+                                <p>Pas de livraison prévue</p>
                             </div>
                         )}
                     </div>
@@ -232,6 +149,6 @@ const ProductTabs = ({ param = {} }) => {
             </div>
         </div>
     );
-};
+}
 
-export default ProductTabs;
+export default Services;

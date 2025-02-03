@@ -1,21 +1,10 @@
 // src/components/Accueil.js
-import React, { useState, useEffect, useContext } from "react"; // Importation de React et des hooks useState et useEffect
-import TopBar from "../../Mescomposants/Header/TopBar";
+import React, { useState, useEffect } from "react"; // Importation de React et des hooks useState et useEffect
 import AppMenu from "../../Mescomposants/AppMenu";
-import MobileMenu from "../../Mescomposants/MobileMenu";
-import Footer from "../../Mescomposants/Footer";
-import ShopFilter from "../../Mescomposants/ShopFilter";
-import ShopCategory from "../../Mescomposants/ShopCategory";
-import ShopBrand from "../../Mescomposants/ShopBrand";
 import { toast } from "react-toastify";
 import { useTheme } from "../../contexts/ThemeContext";
-
-// import ShopSidebar from './ShopSidebar';
-// import Product from './Product';
-// import MainContent from './MainContent';
-// import Header from './components/Header'; // Importation du composant Header
-import { useNavigate } from "react-router-dom"; // Utilisez useNavigate pour la redirection
-import { adminEmail, crudData } from "../../services/apiService"; // Importation de la fonction fetchEvenements depuis le fichier apiService
+import { useNavigate } from "react-router-dom";
+import { adminEmail, crudData } from "../../services/apiService";
 import { formatPrice } from "./Cart";
 import { useOrdersContext } from "../../contexts/OrdersContext";
 
@@ -66,10 +55,8 @@ const Livraison = ({ onSuccess, param = {} }) => {
     /*Pagination*/
 
     const fetchZoneData = (params, url) => {
-        setIsLoading(true);
         crudData(params, url)
             .then((response) => {
-                setIsLoading(false);
                 if (response && response.status === 200) {
                     const zones = response.data.data || []; // Ensure it's an array
                     setZones(Array.isArray(zones) ? zones : []); // Safeguard to ensure it's an array
@@ -80,7 +67,6 @@ const Livraison = ({ onSuccess, param = {} }) => {
                 }
             })
             .catch((error) => {
-                setIsLoading(false);
                 setStatusCode(404);
                 console.error(
                     "Erreur lors de la récupération des données:",
@@ -93,7 +79,6 @@ const Livraison = ({ onSuccess, param = {} }) => {
         setIsLoading(true);
         crudData(params, url)
             .then((response) => {
-                setIsLoading(false);
                 if (response && response.status === 200) {
                     const produitVeto = response.data.lines || []; // Ensure it's an array
                     setProductData(
@@ -115,20 +100,20 @@ const Livraison = ({ onSuccess, param = {} }) => {
                 }
             })
             .catch((error) => {
-                setIsLoading(false);
                 setStatusCode(404);
                 console.error(
                     "Erreur lors de la récupération des données:",
                     error
                 );
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     };
 
     const fetchPanierData = (params, url, setProductData) => {
-        setIsLoading(true);
         crudData(params, url)
             .then((response) => {
-                setIsLoading(false);
                 if (response && response.status === 200) {
                     const produitVeto = response.data.data || []; // Ensure it's an array
                     setCart(produitVeto);
@@ -138,7 +123,6 @@ const Livraison = ({ onSuccess, param = {} }) => {
                 }
             })
             .catch((error) => {
-                setIsLoading(false);
                 setStatusCode(404);
                 console.error(
                     "Erreur lors de la récupération des données:",
@@ -267,31 +251,8 @@ const Livraison = ({ onSuccess, param = {} }) => {
     return (
         <div className={` ${param.userData ? "bgUserConnected" : ""}`}>
             <div className="page-wrapper">
-                {/* Start of Header */}
-                {/* <TopBar /> */}
-
                 <main className="main cart">
                     <AppMenu />
-
-                    {/* Start of Breadcrumb */}
-                    {/* <nav className="breadcrumb-nav">
-          <div className="container">
-            <ul className="breadcrumb shop-breadcrumb bb-no">
-              <li className="active">
-                <a href="cart.html">Shopping Cart</a>
-              </li>
-              <li>
-                <a href="checkout.html">Checkout</a>
-              </li>
-              <li>
-                <a href="order.html">Order Complete</a>
-              </li>
-            </ul>
-          </div>
-        </nav> */}
-
-                    {/* End of Breadcrumb */}
-                    {/* Start of PageContent */}
                     <div className="page-content">
                         <div className="container">
                             <form
@@ -457,7 +418,15 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {currentData &&
+                                                            {isLoading ? (
+                                                                <tr>
+                                                                    <td>
+                                                                        Chargement
+                                                                        des
+                                                                        données...
+                                                                    </td>
+                                                                </tr>
+                                                            ) : (
                                                                 currentData.map(
                                                                     (
                                                                         item,
@@ -493,7 +462,8 @@ const Livraison = ({ onSuccess, param = {} }) => {
                                                                             </td>
                                                                         </tr>
                                                                     )
-                                                                )}
+                                                                )
+                                                            )}
                                                             <tr className="cart-subtotal bb-no">
                                                                 <td>
                                                                     <b>

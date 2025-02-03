@@ -1,21 +1,15 @@
 // src/components/Accueil.js
-import React, { useState, useEffect, useContext } from "react"; // Importation de React et des hooks useState et useEffect
+import React, { useState, useEffect } from "react"; // Importation de React et des hooks useState et useEffect
 import { useTheme } from "../../contexts/ThemeContext";
-import DesktopMenu from "../DesktopMenu";
 import MainNav from "../MainNav";
-import SideCart from "../SideCart";
-import { useNavigate } from "react-router-dom"; // Utilisez useNavigate pour la redirection
-import { fetchEvenements, crudData } from "../../services/apiService"; // Importation de la fonction deleteProduct
-// import './CartItem.css'; // Make sure to create a corresponding CSS file
-import { toast } from "react-toastify";
-import ErrorCard from "../ErrorCard";
+import { Link } from "react-router-dom"; // Utilisez useNavigate pour la redirection
+import { crudData } from "../../services/apiService"; // Importation de la fonction deleteProduct
 import { NavLink } from "react-router-dom";
-import { Modal, Button, Dropdown } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { doConnexion, doDisConnexion } from "../../services/apiService";
 import EncoursComponent from "../Encours/EncoursComponent";
 import "./login.css"; // Add your custom styles here
 import MobileMenu from "../MobileMenu";
-import axios from "axios";
 
 const TopBar = ({ param, onComplete, triggerRequest }) => {
     const { theme, toggleTheme } = useTheme();
@@ -37,9 +31,6 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
     const [IS_ADMIN, setCodeSociete] = useState(0);
 
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
-    const [encours, setEncours] = useState(null); // Nouvel état pour l'encours
-
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -133,7 +124,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                         filters[item].forEach((element) => {
                             items.push({
                                 label: element,
-                                href: `/shop?${item}=${element}`,
+                                href: `/catalogue?${item}=${element}`,
                             });
                         });
                         newMegaMenu.push({
@@ -158,7 +149,6 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
 
     useEffect(() => {
         if (triggerRequest) {
-            console.log("Quantity is greater than 0, refreshing component...");
             const params = {
                 mode: mode.listCommandeproductMode,
                 LG_AGEID: userData.LG_AGEID,
@@ -264,21 +254,27 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                 }`}
             >
                 <div className="header-middle">
-                    <div className="container" style={{ flexWrap: "wrap" }}>
+                    <div
+                        className="container"
+                        style={{
+                            flexWrap: "wrap",
+                            justifyContent: "space-between",
+                        }}
+                    >
                         <div className="header-left mr-md-4">
                             <a
                                 href="#"
                                 className="mobile-menu-toggle  w-icon-hamburger"
                                 aria-label="menu-toggle"
                             ></a>
-                            <a href="demo1.html" className="logo ml-lg-0">
+                            <Link to="/" className="logo ml-lg-0">
                                 <img
                                     src="assets/images/logo.png"
                                     alt="logo"
                                     width={144}
                                     height={45}
                                 />
-                            </a>
+                            </Link>
                         </div>
                         {param.userData ? (
                             <EncoursComponent totalAmount={totalAmount} />
@@ -291,52 +287,108 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                                     <nav className="main-nav text-center">
                                         <ul className="menu ">
                                             <li className="">
-                                                <a
+                                                <div
                                                     className="wishlist label-down link d-xs-show"
-                                                    href="wishlist.html"
+                                                    style={{
+                                                        fontWeight: "bold",
+                                                        cursor: "pointer",
+                                                    }}
                                                 >
-                                                    <i className="w-icon-heart" />
-                                                    <span className="wishlist-label d-lg-show fs_header_1_4rem">
+                                                    <i className="w-icon-account" />
+                                                    {/**  d-lg-show fs_header_1_4rem*/}
+                                                    <span
+                                                        className=""
+                                                        style={{
+                                                            margin: "0.5rem 0 0",
+                                                        }}
+                                                    >
                                                         {
                                                             param.userData
                                                                 .STR_UTIFIRSTLASTNAME
                                                         }
                                                     </span>
-                                                </a>
+                                                </div>
                                                 <ul className="submenu text-left">
-                                                    <li>
-                                                        <a
+                                                    <li style={{}}>
+                                                        <button
                                                             onClick={
                                                                 handleLogout
                                                             }
+                                                            style={{
+                                                                color: "#3656a1",
+                                                                fontFamily:
+                                                                    "Poppins",
+                                                                fontWeight:
+                                                                    "bold",
+                                                                background:
+                                                                    "white",
+                                                                border: "none",
+                                                                fontSize:
+                                                                    "inherit",
+                                                                cursor: "pointer",
+                                                                width: "100%",
+                                                                textAlign:
+                                                                    "left",
+                                                                borderBottom:
+                                                                    "2px solid #3656a1",
+                                                            }}
                                                         >
+                                                            <i className="w-icon-logout"></i>{" "}
                                                             Deconnexion
-                                                        </a>
+                                                        </button>
                                                     </li>
                                                 </ul>
                                             </li>
                                         </ul>
                                     </nav>
-                                    <div className="dropdown cart-dropdown cart-offcanvas mr-lg-0">
-                                        {/* <div className="cart-overlay" /> */}
+                                    <div
+                                        className="dropdown cart-dropdown cart-offcanvas"
+                                        style={{ marginRight: "2.3rem" }}
+                                    >
                                         <a className="cart-toggle label-down link">
                                             <NavLink
                                                 className="cart-toggle label-down link"
-                                                to={"/cart"}
+                                                to={"/panier"}
                                             >
                                                 <i className="w-icon-cart">
                                                     <span className="cart-count">
                                                         {productData &&
                                                             productData.length}
                                                     </span>
-                                                    {/* productData && productData.length */}
                                                 </i>
                                             </NavLink>
-                                            <span className="cart-label">
+                                            <span
+                                                className="cart-label"
+                                                style={{ fontWeight: "bold" }}
+                                            >
                                                 Panier
                                             </span>
                                         </a>
-                                        {/* <SideCart /> */}
+                                    </div>
+                                    <div className="dropdown cart-dropdown cart-offcanvas mr-lg-0">
+                                        <a className="cart-toggle label-down link">
+                                            <NavLink
+                                                className="cart-toggle label-down link"
+                                                to={"/importation"}
+                                                style={{
+                                                    fontWeight: "bold",
+                                                    cursor: "pointer",
+                                                }}
+                                            >
+                                                <i
+                                                    className="w-icon-download"
+                                                    style={{
+                                                        fontWeight: "bold",
+                                                    }}
+                                                ></i>
+                                            </NavLink>
+                                            <span
+                                                className="cart-label"
+                                                style={{ fontWeight: "bold" }}
+                                            >
+                                                Importer
+                                            </span>
+                                        </a>
                                     </div>
                                 </>
                             ) : (
@@ -368,8 +420,6 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                     onHide={() => setShowModal(false)}
                     centered
                 >
-                    {/* <Modal.Header closeButton>
-          </Modal.Header> */}
                     <Modal.Body>
                         <div className="row justify-content-center flex-wrap">
                             <div className="login-container">
@@ -446,19 +496,14 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                                                 </svg>
                                             )}
                                         </div>
-                                        {/* <input type="password" placeholder="Code société"
-                  value={IS_ADMIN}
-                  onChange={(e) => setCodeSociete(e.target.value)}
-                  className="input-field" /> */}
-
                                         <div className="options">
                                             <label>
                                                 <input type="checkbox" /> Rester
                                                 connecté
                                             </label>
-                                            <a href="#">
+                                            <Link to="#">
                                                 Mot de passe oublié ?
-                                            </a>
+                                            </Link>
                                         </div>
                                         <button
                                             type="submit"
@@ -477,7 +522,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                                 <div className="login-right d-none d-md-block">
                                     <div className="company-info">
                                         <img
-                                            src="path_to_logo"
+                                            src="/assets/images/logo-blanc.png"
                                             alt="SN Proveci Logo"
                                             className="company-logo"
                                         />
@@ -492,7 +537,6 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                                         </p>
                                     </div>
                                     <div className="animal-icons">
-                                        {/* Add your animal icons here */}
                                         <img
                                             src="assets/images/icone.png"
                                             alt="Icon"
@@ -503,7 +547,6 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                         </div>
                     </Modal.Body>
                 </Modal>
-                {/* <DesktopMenu /> */}
                 <MainNav param={param} megaMenu={filters} />
                 <MobileMenu megaMenu={filters} />
             </header>
