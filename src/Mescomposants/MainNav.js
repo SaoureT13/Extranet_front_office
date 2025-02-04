@@ -59,7 +59,7 @@ const MainNav = ({ param, megaMenu }) => {
             ? [
                   {
                       label: "TABLEAU DE BORD",
-                      href: "/dashboard",
+                      href: "/tableau-de-bord",
                       submenu: [
                           {
                               label: "Calendrier de livraison",
@@ -81,7 +81,9 @@ const MainNav = ({ param, megaMenu }) => {
 
     return (
         <div
-            className={`header-bottom sticky-content fix-top sticky-header }`}
+            className={`header-bottom sticky-content fix-top sticky-header  ${
+                param.userData ? "" : "bgUserDisconnected"
+            }`}
         >
             <div className="container">
                 <div className="inner-wrap">

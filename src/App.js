@@ -27,6 +27,7 @@ import InvoicePDF from "./Mescomposants/exportPDF/InvoicePDF.js";
 import Invoices from "./MesPages/Invoices/Invoices.js";
 import Import from "./MesPages/Import/Import.js";
 import Services from "./MesPages/Services/Services.js";
+import Dashboard from "./MesPages/Dashboard/Dashboard.js";
 
 function App() {
     const userData = JSON.parse(localStorage.getItem("userData"));
@@ -137,6 +138,10 @@ function App() {
                     <Route
                         path="/services"
                         element={<Services param={params} />}
+                    />
+                    <Route
+                        path="/tableau-de-bord"
+                        element={<Dashboard param={params} />}
                     />
                     {/* Redirection vers la page d'accueil */}
                 </Routes>

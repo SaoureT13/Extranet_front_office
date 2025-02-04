@@ -53,3 +53,28 @@ export function HighlightText({ text, keywords }) {
         </p>
     );
 }
+
+export function getMonthName(monthNumber) {
+    const months = [
+        "Janvier",
+        "Février",
+        "Mars",
+        "Avril",
+        "Mai",
+        "Juin",
+        "Juillet",
+        "Août",
+        "Septembre",
+        "Octobre",
+        "Novembre",
+        "Décembre",
+    ];
+
+    // Vérifier que le numéro est valide
+    if (monthNumber < 1 || monthNumber > 12) {
+        return "Numéro de mois invalide";
+    }
+
+    // Retourner le mois correspondant
+    return months[monthNumber - 1]; // -1 car les indices commencent à 0
+}

@@ -269,7 +269,7 @@ const TopBar = ({ param, onComplete, triggerRequest }) => {
                             ></a>
                             <Link to="/" className="logo ml-lg-0">
                                 <img
-                                    src="assets/images/logo.png"
+                                    src="assets/images/LOGO_SNP_Fond_Transparent.png"
                                     alt="logo"
                                     width={144}
                                     height={45}

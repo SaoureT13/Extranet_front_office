@@ -2,14 +2,17 @@ import React from "react";
 // import Header from '../../Mescomposants/Header'; // Importation du composant Header
 import Footer from "../../Mescomposants/Footer";
 
-const Contact = ({param}) => {
+const Contact = ({ param }) => {
     return (
         <>
-            <div id="otherpage" className={` ${param.userData ? "bgUserConnected" : ""}`}>
-
+            <div
+                id="otherpage"
+                className={` ${param.userData ? "bgUserConnected" : ""}`}
+            >
                 <main className="main">
-                    {/* Start of Page Header */}
-                    <div className="page-header">
+                    <div
+                        className="page-header"
+                    >
                         <div className="container">
                             <h1 className="page-title mb-0">Contactez-nous</h1>
                         </div>
