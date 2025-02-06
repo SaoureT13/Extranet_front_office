@@ -31,8 +31,6 @@ const getFullUrl = () => {
 export const fullUrl = getFullUrl();
 // const fullUrl = "https://djx.975.mytemp.website/";
 
-// +++++++++++++++ FONCTION +++++++++++++++++++
-// const urlBaseImage = ""
 
 const urlBaseImage = "extranetbackend/backoffice/"; //alert(fullUrl+urlBaseImage); backoffice
 export const rootUrl = fullUrl + "extranetbackend/backoffice/webservices/"; //Production //extranetbackend/

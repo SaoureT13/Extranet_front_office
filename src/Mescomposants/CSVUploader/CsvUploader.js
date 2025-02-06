@@ -48,7 +48,7 @@ const CSVUploader = ({ data, onHandlesetData, params, onHandleSuccess }) => {
     const parseCSV = (csvText) => {
         const rows = csvText.trim().split("\n"); // Divise les lignes
         const parsedData = rows.map((row) => {
-            const columns = row.split(",");
+            const columns = row.split(";");
             return {
                 str_proname: columns[0],
                 int_cprquantity: columns[1],
@@ -74,9 +74,9 @@ const CSVUploader = ({ data, onHandlesetData, params, onHandleSuccess }) => {
     // Pagination logic
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-    const currentRows = data.slice(indexOfFirstRow, indexOfLastRow);
+    const currentRows = data && data?.slice(indexOfFirstRow, indexOfLastRow);
 
-    const totalPages = Math.ceil(data.length / rowsPerPage);
+    const totalPages = Math.ceil(data?.length / rowsPerPage);
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -311,7 +311,7 @@ const CSVUploader = ({ data, onHandlesetData, params, onHandleSuccess }) => {
                 </div>
             )}
 
-            {data.length > 0 && (
+            {data && data.length > 0 && (
                 <>
                     <h3>Liste produits à ajouter au panier :</h3>
                     <div
@@ -345,40 +345,43 @@ const CSVUploader = ({ data, onHandlesetData, params, onHandleSuccess }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {currentRows.map((row, index) => (
-                                    <tr key={index}>
-                                        <td style={tableCellStyle}>
-                                            {row.str_proname}
-                                        </td>
-                                        <td style={tableCellStyle}>
-                                            {row.str_prodescription}
-                                        </td>
-                                        <td
-                                            style={{
-                                                ...tableCellStyle,
-                                                textAlign: "right",
-                                            }}
-                                        >
-                                            {formatPrice(row.int_propricevente)}
-                                        </td>
-                                        <td
-                                            style={{
-                                                ...tableCellStyle,
-                                                textAlign: "center",
-                                            }}
-                                        >
-                                            {row.int_cprquantity}
-                                        </td>
-                                        <td
-                                            style={{
-                                                ...tableCellStyle,
-                                                textAlign: "right",
-                                            }}
-                                        >
-                                            {formatPrice(row.dbl_montant)}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {currentRows &&
+                                    currentRows.map((row, index) => (
+                                        <tr key={index}>
+                                            <td style={tableCellStyle}>
+                                                {row.str_proname}
+                                            </td>
+                                            <td style={tableCellStyle}>
+                                                {row.str_prodescription}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    ...tableCellStyle,
+                                                    textAlign: "right",
+                                                }}
+                                            >
+                                                {formatPrice(
+                                                    row.int_propricevente
+                                                )}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    ...tableCellStyle,
+                                                    textAlign: "center",
+                                                }}
+                                            >
+                                                {row.int_cprquantity}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    ...tableCellStyle,
+                                                    textAlign: "right",
+                                                }}
+                                            >
+                                                {formatPrice(row.dbl_montant)}
+                                            </td>
+                                        </tr>
+                                    ))}
                             </tbody>
                         </table>
                     </div>

@@ -327,6 +327,17 @@ const Cart = ({ onSuccess, param = {} }) => {
                                                                                         product.PlvLib
                                                                                     }
                                                                                 </NavLink>
+                                                                                <br />
+                                                                                <span
+                                                                                    style={{
+                                                                                        fontWeight:
+                                                                                            "400",
+                                                                                    }}
+                                                                                >
+                                                                                    {
+                                                                                        product.PlvCode
+                                                                                    }
+                                                                                </span>
                                                                             </td>
                                                                             <td className="">
                                                                                 <span className="amount">

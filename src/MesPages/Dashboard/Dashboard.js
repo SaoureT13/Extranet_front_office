@@ -26,7 +26,7 @@ function Dashboard({ param }) {
                 <div className="bg-blue-light p-5">
                     <div className="row">
                         <h2>Tableau de bord</h2>
-                        <div className="col-lg-3">
+                        {/* <div className="col-lg-3">
                             <aside
                                 className="sidebar shop-sidebar left-sidebar sticky-sidebar-wrapper sidebar-fixed page-container"
                                 style={{ margin: 0 }}
@@ -85,9 +85,9 @@ function Dashboard({ param }) {
                                     </div>
                                 </div>
                             </aside>
-                        </div>
+                        </div> */}
                         <div
-                            className="col-lg-9 pr-lg-4 mb-6 table-min-h d-flex flex-column"
+                            className="col-lg-12 pr-lg-4 mb-6 table-min-h d-flex flex-column"
                             style={{
                                 width: "100%",
                                 overflowX: "auto",
@@ -96,13 +96,12 @@ function Dashboard({ param }) {
                                 position: "relative",
                             }}
                         >
-                            {contentID === 2 ? (
-                                <MostPopularProductsCard />
-                            ) : contentID === 1 ? (
-                                <OrderChart />
-                            ) : (
-                                <div>Third</div>
-                            )}
+                            <OrderChart />
+                            {/* {contentID === 2 ? ( */}
+                            <hr className="product-divider" />
+                            <hr className="product-divider" />
+                            <MostPopularProductsCard />
+                            {/* ) : contentID === 1 ? ( */}
                         </div>
                     </div>
                 </div>

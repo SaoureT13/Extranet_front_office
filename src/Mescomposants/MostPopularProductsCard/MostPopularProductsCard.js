@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { crudData } from "../../services/apiService";
 import { generatePageNumbers } from "../../services/lib";
 import Pagination from "../Pagination/Pagination";
+import { formatPrice } from "../../MesPages/Panier/Cart";
+import { useNavigate } from "react-router-dom";
 
 function MostPopularProductsCard() {
     const [limit, setLimit] = useState(10);
@@ -12,6 +14,8 @@ function MostPopularProductsCard() {
     const [month, setMonth] = useState();
     const [total, setTotal] = useState();
     const [totalPage, setTotalPage] = useState();
+
+    const navigate = useNavigate();
 
     const handleChangeLimit = (limit) => {
         setLimit(limit);
@@ -48,7 +52,6 @@ function MostPopularProductsCard() {
             );
 
             if (response.data.code_statut === "1") {
-                console.log(response.data);
                 return response.data;
             } else {
                 toast.error(response.data.desc_statut);
@@ -125,7 +128,6 @@ function MostPopularProductsCard() {
                         >
                             <span>Nom du produit</span>
                         </th>
-
                         <th
                             className="product-price"
                             style={{
@@ -168,6 +170,7 @@ function MostPopularProductsCard() {
                                     color: "rgb(54, 86, 161)",
                                 }}
                                 key={index}
+                                onClick={() => navigate(`/${product.PROSLUG}`)}
                             >
                                 <td className="product-thumbnail">
                                     <p
@@ -187,7 +190,9 @@ function MostPopularProductsCard() {
                                         }}
                                     >
                                         {" "}
-                                        {product.PROPRICE}
+                                        {formatPrice(
+                                            parseInt(product.PROPRICE)
+                                        ) + " FCFA"}
                                     </p>
                                 </td>
                                 <td className="product-name">

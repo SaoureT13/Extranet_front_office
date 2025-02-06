@@ -21,19 +21,12 @@ const DetailProduct = ({
     imageRuptureStock,
 }) => {
     const errorImageUrl = JSON.parse(localStorage.getItem("errorImageUrl"));
-    const paths = JSON.parse(localStorage.getItem("appPaths"));
-    const urlBaseImage = localStorage.getItem("urlBaseImage");
-    const date = JSON.parse(localStorage.getItem("appDate"));
 
     const [productData, setProductData] = useState(null);
-    const [activeTab, setActiveTab] = useState("product-tab-specification");
     const [quantity, setQuantity] = useState(1); // Gestion de la quantité
     const [statusCode, setStatusCode] = useState(200); // Code statut HTTP
-    const [isLoading, setIsLoading] = useState(false);
 
     const [addedProducts, setAddedProducts] = useState([]);
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [popupContent, setPopupContent] = useState({});
     const [isLoadingSpinner, setIsLoadingSpinner] = useState(false);
     const [substitutionProducts, setSubstitutionProducts] = useState([]);
     const [gallery, setGallery] = useState(null);
@@ -95,7 +88,7 @@ const DetailProduct = ({
                         toast.error(response.desc_statut);
                     }
                 } catch (error) {
-                    console.log(error);
+                    toast.error(error);
                 }
             };
 
@@ -152,13 +145,6 @@ const DetailProduct = ({
             // Update added products
             setAddedProducts([...addedProducts, product]);
 
-            // Open popup with product details
-            setPopupContent({
-                name: product.name,
-                imageSrc: product.imageSrc,
-                message: "has been added to cart.",
-            });
-
             const payload = {
                 mode: param.mode.createCommproduittMode,
                 LG_AGEID: param.userData.LG_AGEID,
@@ -196,11 +182,6 @@ const DetailProduct = ({
                 .finally(() => {
                     setIsLoadingSpinner(false);
                 });
-
-            // Close popup after a delay
-            setTimeout(() => {
-                setIsPopupOpen(false);
-            }, 3000);
         } else {
             toast.error("Stock insuffisante");
         }
@@ -213,41 +194,41 @@ const DetailProduct = ({
         });
     }, []);
 
-    // useEffect(() => {
-    //     const currentProduct = JSON.parse(
-    //         localStorage.getItem("selectedProductId")
-    //     );
+    useEffect(() => {
+        const currentProduct = JSON.parse(
+            localStorage.getItem("selectedProductId")
+        );
 
-    //     let payload = null;
+        let payload = null;
 
-    //     if (param?.userData?.STR_UTITOKEN != null) {
-    //         payload = {
-    //             mode: param.mode.markProductAsViewedMode,
-    //             LG_PROID: currentProduct,
-    //             STR_UTITOKEN: param?.userData?.STR_UTITOKEN,
-    //         };
-    //     } else {
-    //         payload = {
-    //             mode: param.mode.markProductAsViewedMode,
-    //             LG_PROID: currentProduct,
-    //             STR_UTITOKEN: "1",
-    //         };
-    //     }
+        if (param?.userData?.STR_UTITOKEN != null) {
+            payload = {
+                mode: param.mode.markProductAsViewedMode,
+                LG_PROID: currentProduct,
+                STR_UTITOKEN: param?.userData?.STR_UTITOKEN,
+            };
+        } else {
+            payload = {
+                mode: param.mode.markProductAsViewedMode,
+                LG_PROID: currentProduct,
+                STR_UTITOKEN: "1",
+            };
+        }
 
-    //     crudData(payload, param.apiEndpointe.ConfigurationManagerEndPoint)
-    //         .then((response) => {
-    //             if (response && response.status === 200) {
-    //                 if (response.data.code_statut !== "1") {
-    //                     console.log("Erreur dans le marquage");
-    //                 }
-    //             } else {
-    //                 toast.error("Erreur survenu");
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             console.error("Erreur:", error);
-    //         });
-    // }, []);
+        crudData(payload, param.apiEndpointe.ConfigurationManagerEndPoint)
+            .then((response) => {
+                if (response && response.status === 200) {
+                    if (response.data.code_statut !== "1") {
+                        console.log("Erreur dans le marquage");
+                    }
+                } else {
+                    toast.error("Erreur survenu");
+                }
+            })
+            .catch((error) => {
+                toast.error("Erreur:", error);
+            });
+    }, []);
 
     return (
         <>
@@ -303,6 +284,16 @@ const DetailProduct = ({
                                                                 {productData &&
                                                                     productData.ArtLib}
                                                             </h1>
+                                                            <div
+                                                                className="product-subtitle"
+                                                                style={{
+                                                                    fontSize:
+                                                                        "2rem",
+                                                                }}
+                                                            >
+                                                                {productData &&
+                                                                    productData?.ArtCode}
+                                                            </div>{" "}
                                                             <hr className="product-divider" />
                                                             {param.userData !=
                                                                 null && (
@@ -397,7 +388,6 @@ const DetailProduct = ({
                                                                     </div>
                                                                 </div>
                                                             )}
-
                                                             <div className="tab tab-nav-boxed tab-nav-underline product-tabs">
                                                                 <ul
                                                                     className="nav nav-tabs"
